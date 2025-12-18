@@ -1,0 +1,20 @@
+// Your modules
+export const modules = [
+    "cas",
+    "ims-sysm",
+    "ims-andon",
+    "ims-bi",
+    "ims-bs",
+    "ims-cl",
+    "ims-eam",
+    "ims-mes",
+    "ims-mes-smt",
+    "ims-qcs",
+    "ims-query",
+    "ims-report",
+    "ims-spc",
+    "ims-wms",
+    "ims-cust",
+    "ims-job",
+    "inte",
+];
