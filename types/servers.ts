@@ -1,23 +1,34 @@
 export interface SSHConfig {
-    host: string;
-    port: number;
-    username: string;
-    password?: string;
-    privateKey?: string;
-}
-
-export interface iModuleStatus {
-    module: string;
-    status: string;
-    pid?: string;
-}
-
-export interface iServerItem {
-    server: string;
-    status: string;
-    modules: iModuleStatus[]
+  host: string;
+  port: number;
+  username: string;
+  password?: string;
+  privateKey?: string;
 }
 
 export interface iServersStatusResponse {
-    servers: iServerItem[];
+  updatedAt: string;
+  servers: Server[];
+}
+
+export interface Server {
+  server: string;
+  status: string;
+  services: Service[];
+}
+
+export interface Service {
+  type: string;
+  result: Result[];
+}
+
+export interface Result {
+  service: string;
+  status: string;
+  pid?: string;
+}
+
+export interface SystemctlStatus {
+  active: boolean;
+  pid: string | null;
 }

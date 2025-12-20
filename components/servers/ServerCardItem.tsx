@@ -1,6 +1,6 @@
 "use client";
 
-import { iServerItem } from "@/types/servers";
+import { Result, Server, Service } from "@/types/servers";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import {
   ContextMenu,
@@ -13,36 +13,36 @@ import { ArrowCounterClockwiseIcon } from "../ui/icons/akar-icons-arrow-counter-
 import { useState } from "react";
 import { toast } from "sonner";
 
-interface ServerCardItemProps {
-  serverItem: iServerItem;
-}
+type ServerCardItemProps = {
+  serverItem: Server;
+};
 
-const ServerCardItem = ({ serverItem }: ServerCardItemProps) => {
-  const [selectedModule, setSelectedModule] = useState<{
+const ServerCardItem = ({serverItem}: ServerCardItemProps) => {
+  const [selectedService, setSelectedService] = useState<{
     server: string;
-    module: string;
+    service: string;
   } | null>(null);
 
-  function handleRestartBtnClick(server: string, module: string) {
-    toast(`Restarting server: ${server} / ${module}`);
+  function handleRestartBtnClick(server: string, service: string) {
+    toast(`Restarting server: ${server} / ${service}`);
     const restartServer = async () => {
       try {
         const response = await fetch(
-          `/api/restart-server?server=${server}&module=${module}`,
+          `/api/restart-server?server=${server}&service=${service}`,
           {
             method: "POST",
           }
         );
         const data = await response.json();
         if (response.ok) {
-          toast.success(`Successfully restarted: ${server} / ${module}`);
+          toast.success(`Successfully restarted: ${server} / ${service}`);
         } else {
           toast.error(
-            `Failed to restart: ${server} / ${module} - ${data.error}`
+            `Failed to restart: ${server} / ${service} - ${data.error}`
           );
         }
       } catch (error) {
-        toast.error(`Error restarting: ${server} / ${module} - ${error}`);
+        toast.error(`Error restarting: ${server} / ${service} - ${error}`);
       }
     };
     restartServer();
@@ -50,46 +50,53 @@ const ServerCardItem = ({ serverItem }: ServerCardItemProps) => {
   }
 
   return (
-    <Card className="m-2 p-2 border border-gray-300 rounded w-1/2">
+    <Card className="m-2 p-2 border border-gray-300 rounded w-full h-full overflow-y-auto">
       <CardHeader>
         <CardTitle>{serverItem.server}</CardTitle>
         <CardDescription className="text-black">
           <ContextMenu>
             <ContextMenuTrigger asChild>
               <div>
-                {serverItem.modules.map((module) => (
+                {serverItem.services.map((service) => (
+                  service.result.map(({service, status, pid}) => (
                   <div
-                    key={module.module}
-                    onContextMenu={() =>
-                      setSelectedModule({
-                        server: serverItem.server,
-                        module: module.module,
-                      })
-                    }
+                    key={service}
                     className="hover:bg-gray-200 py-1 px-2 rounded cursor-pointer"
                   >
-                    {module.module} -{" "}
+                      <span
+                        key={service}
+                        onClick={() =>
+                          setSelectedService({
+                            server: serverItem.server,
+                            service: service,
+                          })
+                        }
+                      >
+                        {service}:
+                      </span>
                     <strong
                       className={`px-1 rounded-sm ${
-                        module.status === "RUNNING"
+                        status === "RUNNING"
                           ? "text-white bg-emerald-600"
                           : "text-black bg-red-500"
                       }`}
                     >
-                      {module.status}
+                      {status}
                     </strong>{" "}
-                    {module.pid ? `(PID: ${module.pid})` : ""}
+                    {pid ? `(PID: ${pid})` : ""}
                   </div>
+                  ))
+                
                 ))}
               </div>
             </ContextMenuTrigger>
             <ContextMenuContent className="flex items-center">
               <ContextMenuItem
                 onClick={() => {
-                  if (!selectedModule) return;
+                  if (!selectedService) return;
                   handleRestartBtnClick(
-                    selectedModule.server,
-                    selectedModule.module
+                    selectedService.server,
+                    selectedService.service
                   );
                 }}
               >

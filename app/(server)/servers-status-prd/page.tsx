@@ -1,6 +1,6 @@
 import RefreshStatusButton from "@/components/Navbar/RefreshStatusButton";
 import ServerCardItem from "@/components/servers/ServerCardItem";
-import { iServerItem, iServersStatusResponse } from "@/types/servers";
+import { iServersStatusResponse, Server } from "@/types/servers";
 
 const ServerListPage = async () => {
   const data = await fetch("http://localhost:3000/api/status-all-prd");
@@ -13,8 +13,8 @@ const ServerListPage = async () => {
         <RefreshStatusButton />
       </nav>
 
-      <section className="flex">
-        {servers.map((serverItem: iServerItem) => (
+      <section className="grid grid-cols-4 gap-3 p-3 h-screen">
+        {servers.map((serverItem: Server) => (
           <ServerCardItem key={serverItem.server} serverItem={serverItem} />
         ))}
       </section>

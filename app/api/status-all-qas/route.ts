@@ -1,4 +1,4 @@
-import { modules } from "@/lib/utils/modules-list";
+import { appServices } from "@/lib/utils/services-list";
 import { qas_servers } from "@/lib/utils/server-list";
 import { NextResponse } from "next/server";
 import { Client } from "ssh2";
@@ -61,22 +61,22 @@ export async function GET() {
           // 1️⃣ Open ONE SSH connection for this server
           conn = await openSSH(config);
 
-          const moduleStatus = [] as any[];
+          const serviceStatus = [] as any[];
 
-          // 2️⃣ Check modules SEQUENTIALLY to avoid overload
-          for (const module of modules) {
+          // 2️⃣ Check services SEQUENTIALLY to avoid overload
+          for (const service of appServices) {
             try {
-              const cmd = `pgrep -f ${module}`;
+              const cmd = `pgrep -f ${service}`;
               const result = await execCommand(conn, cmd);
 
-              moduleStatus.push({
-                module,
+              serviceStatus.push({
+                service,
                 status: result ? "RUNNING" : "STOPPED",
                 pid: result || null,
               });
             } catch {
-              moduleStatus.push({
-                module,
+              serviceStatus.push({
+                service,
                 status: "STOPPED",
                 pid: null,
               });
@@ -86,14 +86,14 @@ export async function GET() {
           return {
             server: serverName,
             status: "ONLINE",
-            modules: moduleStatus,
+            services: serviceStatus,
           };
         } catch (err: any) {
           return {
             server: serverName,
             status: "OFFLINE",
             error: err.message || "SSH connection failed",
-            modules: [],
+            services: [],
           };
         } finally {
           // 3️⃣ Always close SSH connection
