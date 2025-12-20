@@ -21,7 +21,7 @@ const ServerListPage = async () => {
       <nav className="flex justify-between w-full p-3 bg-blue-300 items-center">
         {/* left */}
         <div>
-          <h1 className="text-2xl font-semibold">Server List</h1>
+          <h1 className="text-2xl font-semibold">MES Server List</h1>
         </div>
 
         {/* right */}
