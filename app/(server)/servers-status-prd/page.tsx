@@ -7,8 +7,10 @@ import {
 } from "@/lib/helpers/group-by-type";
 import { iServersStatusResponse } from "@/types/servers";
 
+const API_URL = process.env.API_URL
+
 const ServerListPage = async () => {
-  const data = await fetch("http://localhost:3000/api/status-all-prd", {
+const data = await fetch(`${API_URL}/api/status-all-prd`, {
     cache: "no-store",
   });
 
