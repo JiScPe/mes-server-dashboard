@@ -16,7 +16,7 @@ export const appServices = [
   "ims-wms",
   "ims-cust",
   "ims-job",
-  "inte",
+  "integrate-server",
 ];
 
 export const nginxServices = ["keepalived", "nginx"];
