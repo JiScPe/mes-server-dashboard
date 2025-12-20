@@ -32,3 +32,5 @@ export interface SystemctlStatus {
   active: boolean;
   pid: string | null;
 }
+
+export type ServiceType = "NGINX" | "REDIS" | "MES_PRD_APP" | "WPCL" | "IOT";

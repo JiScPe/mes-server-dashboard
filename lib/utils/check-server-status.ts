@@ -55,7 +55,6 @@ export async function checkServer(serverName: string, config: SSHConfig) {
 
     for (const type of types) {
       const handler = SERVER_HANDLERS[type];
-      console.log(handler)
       if (!handler) continue;
 
       const result = await handler(conn);

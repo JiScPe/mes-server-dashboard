@@ -45,6 +45,7 @@ const ServerListPage = async () => {
                   <ServerCardItem
                     key={serverItem.server}
                     serverItem={serverItem}
+                    serverType={type}
                   />
                 ))}
               </div>

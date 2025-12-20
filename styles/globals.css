@@ -135,3 +135,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .bg-service-nginx {
+    background-color: var(--service-nginx);
+  }
+
+  .bg-service-redis {
+    background-color: var(--service-redis);
+  }
+
+  .bg-service-appserv {
+    background-color: var(--service-appserv);
+  }
+
+  .bg-service-wpcl {
+    background-color: var(--service-wpcl);
+  }
+
+  .bg-service-iot {
+    background-color: var(--service-iot);
+  }
+}
