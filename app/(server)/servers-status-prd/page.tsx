@@ -6,7 +6,8 @@ import {
   SERVICE_TYPE_ORDER,
 } from "@/lib/helpers/group-by-type";
 import { iServersStatusResponse } from "@/types/servers";
-
+import Image from "next/image";
+import TpvLogo from './../../../public/icons/tpvlogo.png';
 const API_URL = process.env.API_URL
 
 const ServerListPage = async () => {
@@ -19,11 +20,12 @@ const data = await fetch(`${API_URL}/api/status-all-prd`, {
   const groupedServers = groupServersByType(servers);
 
   return (
-    <div className="min-h-screen">
-      <nav className="flex justify-between w-full p-3 bg-blue-300 items-center">
+    <div className="min-h-screen bg-slate-100">
+      <nav className="flex justify-between w-full bg-tpv-main items-center pr-3">
         {/* left */}
-        <div>
-          <h1 className="text-2xl font-semibold">MES Server List</h1>
+        <div className="flex gap-2 items-center">
+          <Image src={TpvLogo} width={120} height={40} alt="tpv-logo"/>
+          <h1 className="text-2xl font-semibold text-white">MES Server List</h1>
         </div>
 
         {/* right */}

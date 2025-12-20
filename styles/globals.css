@@ -158,4 +158,8 @@
   .bg-service-iot {
     background-color: var(--service-iot);
   }
+
+  .bg-tpv-main {
+    background-color: var(--tpv-main);
+  }
 }
