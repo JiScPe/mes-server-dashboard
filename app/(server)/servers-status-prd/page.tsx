@@ -1,5 +1,6 @@
 import RefreshStatusButton from "@/components/Navbar/RefreshStatusButton";
 import ServerCardItem from "@/components/servers/ServerCardItem";
+import { ToggleTheme } from "@/components/toggle-theme";
 import {
   groupServersByType,
   SERVICE_TYPE_ORDER,
@@ -18,8 +19,16 @@ const ServerListPage = async () => {
   return (
     <div className="min-h-screen">
       <nav className="flex justify-between w-full p-3 bg-blue-300 items-center">
-        <h1 className="text-2xl font-semibold">Server List</h1>
-        <RefreshStatusButton />
+        {/* left */}
+        <div>
+          <h1 className="text-2xl font-semibold">Server List</h1>
+        </div>
+
+        {/* right */}
+        <div className="flex gap-2">
+          <ToggleTheme />
+          <RefreshStatusButton />
+        </div>
       </nav>
 
       <main className="space-y-8 p-4">
