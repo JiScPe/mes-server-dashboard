@@ -85,6 +85,7 @@
   --service-appserv: oklch(0.94 0.05 40);  /* pastel orange */
   --service-wpcl: oklch(0.94 0.05 320);    /* pastel purple */
   --service-iot: oklch(0.93 0.06 90);        /* pastel yellow */
+  --tpv-main: hsl(216, 60%, 31%);
 }
 
 .dark {
@@ -125,6 +126,7 @@
   --service-appserv: oklch(0.34 0.07 40);
   --service-wpcl: oklch(0.33 0.07 320);
   --service-iot: oklch(0.35 0.08 90);
+  --tpv-main: hsl(216, 60%, 31%);
 }
 
 @layer base {
