@@ -26,27 +26,27 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
 
   function handleRestartBtnClick(server: string, service: string) {
     toast(`Restarting server: ${server} / ${service}`);
-    const restartServer = async () => {
-      try {
-        const response = await fetch(
-          `/api/restart-server?server=${server}&service=${service}`,
-          {
-            method: "POST",
-          }
-        );
-        const data = await response.json();
-        if (response.ok) {
-          toast.success(`Successfully restarted: ${server} / ${service}`);
-        } else {
-          toast.error(
-            `Failed to restart: ${server} / ${service} - ${data.error}`
-          );
-        }
-      } catch (error) {
-        toast.error(`Error restarting: ${server} / ${service} - ${error}`);
-      }
-    };
-    restartServer();
+    // const restartServer = async () => {
+    //   try {
+    //     const response = await fetch(
+    //       `/api/restart-server?server=${server}&service=${service}`,
+    //       {
+    //         method: "POST",
+    //       }
+    //     );
+    //     const data = await response.json();
+    //     if (response.ok) {
+    //       toast.success(`Successfully restarted: ${server} / ${service}`);
+    //     } else {
+    //       toast.error(
+    //         `Failed to restart: ${server} / ${service} - ${data.error}`
+    //       );
+    //     }
+    //   } catch (error) {
+    //     toast.error(`Error restarting: ${server} / ${service} - ${error}`);
+    //   }
+    // };
+    // restartServer();
     // Implement restart logic here
   }
 
