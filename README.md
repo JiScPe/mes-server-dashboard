@@ -4,7 +4,7 @@
 ## Requirement Tools
 1. Node.js [download-link](`https://nodejs.org/en/download/current`)
 2. Git [download-link](`https://git-scm.com/install/`)
-3. GithubDesktop [download-link](`https://desktop.github.com/download/`)
+3. GithubDesktop(Optional) [download-link](`https://desktop.github.com/download/`)
 
 ## Get Started
 Check all tools are installed by run these commands.
