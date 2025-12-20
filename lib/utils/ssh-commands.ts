@@ -119,7 +119,7 @@ export async function redisCheckStatusProcess({ conn }: Props) {
 
   for (const service of redisServices) {
     try {
-      const cmd = `pgrep -f ${service}`;
+      const cmd = `pgrep -o -f ${service}`;
       const pid = await execGrepCommand(conn, cmd);
 
       results.push({
@@ -145,7 +145,7 @@ export async function appCheckStatusProcess({ conn }: Props) {
 
   for (const service of appServices) {
     try {
-      const cmd = `pgrep -f ${service}`;
+      const cmd = `pgrep -o -f ${service}`;
       const pid = await execGrepCommand(conn, cmd);
 
       results.push({
@@ -171,7 +171,7 @@ export async function wpclCheckStatusProcess({ conn }: Props) {
 
   for (const service of wpclServices) {
     try {
-      const cmd = `pgrep -f ${service}`;
+      const cmd = `pgrep -o -f ${service}`;
       const pid = await execGrepCommand(conn, cmd);
 
       results.push({
