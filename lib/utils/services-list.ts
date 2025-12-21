@@ -1,5 +1,6 @@
 // Your modules
 export const appServices = [
+  "nfs-server",
   "cas",
   "ims-sysm",
   "ims-andon",

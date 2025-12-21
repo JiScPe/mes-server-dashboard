@@ -46,7 +46,7 @@ const data = await fetch(`${API_URL}/api/status-all-prd`, {
               <header className="flex items-center gap-2">
                 <h2 className="text-lg font-semibold capitalize">
                   {type} services
-                </h2>e
+                </h2>
                 <span className="text-sm text-muted-foreground">
                   ({list.length})
                 </span>
