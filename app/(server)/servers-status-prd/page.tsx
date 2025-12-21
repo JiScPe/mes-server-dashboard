@@ -9,9 +9,10 @@ import { iServersStatusResponse } from "@/types/servers";
 import Image from "next/image";
 import TpvLogo from './../../../public/icons/tpvlogo.png';
 const API_URL = process.env.API_URL
+const PORT = process.env.PORT
 
 const ServerListPage = async () => {
-const data = await fetch(`${API_URL}/api/status-all-prd`, {
+const data = await fetch(`${API_URL}:${PORT}/api/status-all-prd`, {
     cache: "no-store",
   });
 

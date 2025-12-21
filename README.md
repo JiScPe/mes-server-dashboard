@@ -26,3 +26,5 @@ create project folder and navigate to that folder in ternimal
 - change file name .env.example  into .env ~~.example~~
 - run `npm run dev`
 - Go to http://localhost:3000 for test
+
+`npx tsc server/ws/ssh-terminal.ts --outDir dist/ws`

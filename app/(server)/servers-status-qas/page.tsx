@@ -8,9 +8,10 @@ import {
 import { iServersStatusResponse } from "@/types/servers";
 
 const API_URL = process.env.API_URL
+const PORT = process.env.PORT
 
 const ServerListPage = async () => {
-  const data = await fetch(`${API_URL}/api/status-all-qas`, {
+  const data = await fetch(`${API_URL}:${PORT}/api/status-all-qas`, {
     cache: "no-store",
   });
 
