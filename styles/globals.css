@@ -48,7 +48,7 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: oklch(0.985 0.005 250);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -85,11 +85,14 @@
   --service-appserv: oklch(0.94 0.05 40);  /* pastel orange */
   --service-wpcl: oklch(0.94 0.05 320);    /* pastel purple */
   --service-iot: oklch(0.93 0.06 90);        /* pastel yellow */
+  --service-zoo: oklch(0.93 0.05 200);        /* pastel cyan */
+  --service-db: oklch(0.94 0.05 20);         /* pastel coral */
+  --service-mongo: oklch(0.92 0.04 280);     /* pastel lavender */
   --tpv-main: hsl(216, 60%, 31%);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(0.17 0.012 40);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -126,6 +129,9 @@
   --service-appserv: oklch(0.34 0.07 40);
   --service-wpcl: oklch(0.33 0.07 320);
   --service-iot: oklch(0.35 0.08 90);
+  --service-zoo: oklch(0.38 0.08 200);        /* muted cyan */
+  --service-db: oklch(0.40 0.08 20);         /* muted coral */
+  --service-mongo: oklch(0.36 0.07 280);     /* muted lavender */
   --tpv-main: hsl(216, 60%, 31%);
 }
 
@@ -139,6 +145,18 @@
 }
 
 @layer utilities {
+  .bg-service-zoo {
+    background-color: var(--service-zoo);
+  }
+
+  .bg-service-db {
+    background-color: var(--service-db);
+  }
+
+  .bg-service-mongo {
+    background-color: var(--service-mongo);
+  }
+
   .bg-service-nginx {
     background-color: var(--service-nginx);
   }

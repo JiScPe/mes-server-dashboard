@@ -19,6 +19,12 @@ export const appServices = [
   "integrate-server",
 ];
 
+export const zooServices = ["zookeeper"];
+
+export const mongoServices = ["mongod"];
+
+export const dbServices = ["ecox"];
+
 export const nginxServices = ["keepalived", "nginx"];
 
 export const redisServices = ["redis"];

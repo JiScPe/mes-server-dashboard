@@ -1,6 +1,54 @@
 import { SSHConfig } from "@/types/servers";
 
 export const prd_servers: Record<string, SSHConfig> = {
+    ZOO_PRD_SERVER_1: {
+        host: process.env.ZOO_PRD_SERVER_1_HOST || "",
+        port: 22,
+        username: "root",
+        password: process.env.MES_APP_SERVER_PASSWORD || "",
+    },
+    ZOO_PRD_SERVER_2: {
+        host: process.env.ZOO_PRD_SERVER_2_HOST || "",
+        port: 22,
+        username: "root",
+        password: process.env.MES_APP_SERVER_PASSWORD || "",
+    },
+    ZOO_PRD_SERVER_3: {
+        host: process.env.ZOO_PRD_SERVER_3_HOST || "",
+        port: 22,
+        username: "root",
+        password: process.env.MES_APP_SERVER_PASSWORD || "",
+    },
+    DB_PRD_SERVER_1: {
+        host: process.env.DB_PRD_SERVER_1_HOST || "",
+        port: 22,
+        username: "root",
+        password: process.env.MES_APP_SERVER_PASSWORD || "",
+    },
+    DB_PRD_SERVER_2: {
+        host: process.env.DB_PRD_SERVER_2_HOST || "",
+        port: 22,
+        username: "root",
+        password: process.env.MES_APP_SERVER_PASSWORD || "",
+    },
+    MONGO_PRD_SERVER_1: {
+        host: process.env.MONGO_PRD_SERVER_1_HOST || "",
+        port: 22,
+        username: "root",
+        password: process.env.MES_APP_SERVER_PASSWORD || "",
+    },
+    MONGO_PRD_SERVER_2: {
+        host: process.env.MONGO_PRD_SERVER_2_HOST || "",
+        port: 22,
+        username: "root",
+        password: process.env.MES_APP_SERVER_PASSWORD || "",
+    },
+    MONGO_PRD_SERVER_3: {
+        host: process.env.MONGO_PRD_SERVER_3_HOST || "",
+        port: 22,
+        username: "root",
+        password: process.env.MES_APP_SERVER_PASSWORD || "",
+    },
     NGINX_PRD_SERVER_1: {
         host: process.env.NGINX_PRD_SERVER_1_HOST || "",
         port: 22,

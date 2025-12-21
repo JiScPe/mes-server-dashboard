@@ -1,10 +1,13 @@
 import { SystemctlStatus } from "@/types/servers";
 import {
   appServices,
+  dbServices,
   iotServices,
+  mongoServices,
   nginxServices,
   redisServices,
   wpclServices,
+  zooServices,
 } from "./services-list";
 import { Client } from "ssh2";
 
@@ -73,6 +76,78 @@ function execSystemctlCommand(
   });
 }
 
+// zoo check status process
+export async function zooCheckStatusProcess({ conn }: Props) {
+  const results: any[] = [];
+  for (const service of zooServices) {
+    try {
+      const { active, pid } = await execSystemctlCommand(conn, service);
+
+      results.push({
+        service,
+        status: active ? "RUNNING" : "STOPPED",
+        pid,
+      });
+    } catch {
+      results.push({
+        service,
+        status: "STOPPED",
+        pid: null,
+      });
+    }
+  }
+
+  return results;
+}
+// db check status process
+export async function dbCheckStatusProcess({ conn }: Props) {
+  const results: any[] = [];
+
+  for (const service of dbServices) {
+    try {
+      const { active, pid } = await execSystemctlCommand(conn, service);
+
+      results.push({
+        service,
+        status: active ? "RUNNING" : "STOPPED",
+        pid,
+      });
+    } catch {
+      results.push({
+        service,
+        status: "STOPPED",
+        pid: null,
+      });
+    }
+  }
+
+  return results;
+}
+// mongo check status process
+export async function mongoCheckStatusProcess({ conn }: Props) {
+  const results: any[] = [];
+
+  for (const service of mongoServices) {
+    try {
+      const { active, pid } = await execSystemctlCommand(conn, service);
+
+      results.push({
+        service,
+        status: active ? "RUNNING" : "STOPPED",
+        pid,
+      });
+    } catch {
+      results.push({
+        service,
+        status: "STOPPED",
+        pid: null,
+      });
+    }
+  }
+
+  return results;
+}
+
 // nginx check status process
 export async function nginxCheckStatusProcess({ conn }: Props) {
   const results: any[] = [];
@@ -111,7 +186,6 @@ export async function nginxCheckStatusProcess({ conn }: Props) {
 
   return results;
 }
-
 
 // redis check status process
 export async function redisCheckStatusProcess({ conn }: Props) {

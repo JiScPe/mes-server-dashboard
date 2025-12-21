@@ -52,6 +52,12 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
 
   function setCardBgColor(type: ServiceType): string {
     switch (type) {
+      case "ZOOKEEPER":
+        return "bg-service-zoo";
+      case "DB":
+        return "bg-service-db";
+      case "MONGO":
+        return "bg-service-mongo";
       case "NGINX":
         return "bg-service-nginx";
       case "REDIS":
@@ -63,13 +69,15 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
       case "IOT":
         return "bg-service-iot";
       default:
-        return "bg-service-nginx";
+        return "bg-muted";
     }
   }
 
   return (
     <Card
-      className={`m-2 p-2 border border-gray-300 rounded w-full h-full overflow-y-auto bg-chart bg-transparent ${setCardBgColor(serverType)}`}
+      className={`m-2 p-2 border border-gray-300 rounded w-full h-full overflow-y-auto bg-chart bg-transparent ${setCardBgColor(
+        serverType
+      )}`}
     >
       <CardHeader>
         <CardTitle>{serverItem.server}</CardTitle>
@@ -81,7 +89,7 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
                   service.result.map(({ service, status, pid }) => (
                     <div
                       key={service}
-                      className="hover:bg-gray-200 py-1 px-2 rounded cursor-pointer"
+                      className="hover:bg-secondary py-1 px-2 rounded cursor-pointer text-card-foreground"
                     >
                       <span
                         key={service}

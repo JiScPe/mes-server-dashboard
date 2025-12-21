@@ -2,13 +2,16 @@ import { SSHConfig } from "@/types/servers";
 import { Client } from "ssh2";
 import {
   appCheckStatusProcess,
+  dbCheckStatusProcess,
   iotCheckStatusProcess,
+  mongoCheckStatusProcess,
   nginxCheckStatusProcess,
   redisCheckStatusProcess,
   wpclCheckStatusProcess,
+  zooCheckStatusProcess,
 } from "./ssh-commands";
 
-type ServerType = "NGINX" | "REDIS" | "MES_PRD_APP" | "WPCL" | "IOT";
+type ServerType = "ZOOKEEPER" | "DB" | "MONGO" | "NGINX" | "REDIS" | "MES_PRD_APP" | "WPCL" | "IOT";
 
 type StatusHandler = (conn: Client) => Promise<any>;
 
@@ -25,6 +28,9 @@ type StatusHandler = (conn: Client) => Promise<any>;
 }
 
 const SERVER_HANDLERS: Record<ServerType, StatusHandler> = {
+  ZOOKEEPER: async (conn) => zooCheckStatusProcess({ conn }),
+  DB: async (conn) => dbCheckStatusProcess({ conn }),
+  MONGO: async (conn) => mongoCheckStatusProcess({ conn }),
   NGINX: async (conn) => nginxCheckStatusProcess({ conn }),
   REDIS: async (conn) => redisCheckStatusProcess({ conn }),
   MES_PRD_APP: async (conn) => appCheckStatusProcess({ conn }),
@@ -35,6 +41,9 @@ const SERVER_HANDLERS: Record<ServerType, StatusHandler> = {
 function detectServerTypes(serverName: string): ServerType[] {
   const types: ServerType[] = [];
 
+  if (serverName.includes("ZOO")) types.push("ZOOKEEPER");
+  if (serverName.includes("DB")) types.push("DB");
+  if (serverName.includes("MONGO")) types.push("MONGO");
   if (serverName.includes("NGINX")) types.push("NGINX");
   if (serverName.includes("REDIS")) types.push("REDIS");
   if (serverName.includes("MES_PRD_APP")) types.push("MES_PRD_APP");

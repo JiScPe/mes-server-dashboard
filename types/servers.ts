@@ -33,4 +33,4 @@ export interface SystemctlStatus {
   pid: string | null;
 }
 
-export type ServiceType = "NGINX" | "REDIS" | "MES_PRD_APP" | "WPCL" | "IOT";
+export type ServiceType = "ZOOKEEPER" | "DB" | "MONGO" | "NGINX" | "REDIS" | "MES_PRD_APP" | "WPCL" | "IOT";

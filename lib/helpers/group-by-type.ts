@@ -1,6 +1,9 @@
 import { Server } from "@/types/servers";
 
 export const SERVICE_TYPE_ORDER = [
+  "ZOOKEEPER",
+  "DB",
+  "MONGO",
   "NGINX",
   "REDIS",
   "MES_PRD_APP",

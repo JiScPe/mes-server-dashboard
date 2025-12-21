@@ -20,7 +20,7 @@ const data = await fetch(`${API_URL}/api/status-all-prd`, {
   const groupedServers = groupServersByType(servers);
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen">
       <nav className="flex justify-between w-full bg-tpv-main items-center pr-3">
         {/* left */}
         <div className="flex gap-2 items-center">
@@ -35,7 +35,7 @@ const data = await fetch(`${API_URL}/api/status-all-prd`, {
         </div>
       </nav>
 
-      <main className="space-y-8 p-4">
+      <main className="space-y-8 p-4 dark:bg-secondary">
         {SERVICE_TYPE_ORDER.map((type) => {
           const list = groupedServers[type];
           if (!list || list.length === 0) return null;
@@ -46,7 +46,7 @@ const data = await fetch(`${API_URL}/api/status-all-prd`, {
               <header className="flex items-center gap-2">
                 <h2 className="text-lg font-semibold capitalize">
                   {type} services
-                </h2>
+                </h2>e
                 <span className="text-sm text-muted-foreground">
                   ({list.length})
                 </span>
