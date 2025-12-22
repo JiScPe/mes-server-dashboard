@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"next dev\" \"npm run ws\"",
-    "build": "next build",
+    "dev": "next dev",
+    "build": "next build && tsc -p tsconfig.server.json",
+    "ws:dev": "ts-node --project tsconfig.server.json -r tsconfig-paths/register server/ws/ssh-terminal.ts",
+    "ws": "node -r tsconfig-paths/register dist/server/ws/ssh-terminal.js",
     "start": "next start",
-    "lint": "eslint",
-    "ws": "node dist/ws/ssh-terminal.js"
+    "lint": "eslint"
   },
   "dependencies": {
     "@radix-ui/react-collapsible": "^1.1.12",
@@ -17,6 +18,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.3",
     "lucide-react": "^0.561.0",
     "next": "16.0.10",
     "next-themes": "^0.4.6",
@@ -41,6 +43,7 @@
     "eslint-config-next": "16.0.10",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5.9.3"
   }

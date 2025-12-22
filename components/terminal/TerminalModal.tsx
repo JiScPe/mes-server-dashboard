@@ -2,10 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-const XTerm = dynamic(
-  () => import("./XTermClient"),
-  { ssr: false }
-);
+const XTerm = dynamic(() => import("./XTermClient"), { ssr: false });
 
 export default function TerminalModal({
   server,

@@ -1,4 +1,4 @@
-import { SSHConfig } from "@/types/servers";
+import { SSHConfig } from '@/types/servers';
 
 export const prd_servers: Record<string, SSHConfig> = {
     ZOO_PRD_SERVER_1: {
@@ -154,4 +154,12 @@ export const qas_servers: Record<string, SSHConfig> = {
         username: "root",
         password: process.env.MES_APP_SERVER_PASSWORD || "",
     },
+};
+
+/**
+ * Unified lookup
+ */
+export const ALL_SERVERS: Record<string, SSHConfig> = {
+  ...prd_servers,
+  ...qas_servers,
 };

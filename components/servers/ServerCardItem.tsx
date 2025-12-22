@@ -23,22 +23,22 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
 
   function setCardBgColor(type: ServiceType): string {
     switch (type) {
-      case "ZOOKEEPER":
-        return "bg-service-zoo";
-      case "DB":
-        return "bg-service-db";
-      case "MONGO":
-        return "bg-service-mongo";
-      case "NGINX":
-        return "bg-service-nginx";
-      case "REDIS":
-        return "bg-service-redis";
-      case "MES_PRD_APP":
+      // case "ZOOKEEPER":
+      //   return "bg-service-zoo";
+      // case "DB":
+      //   return "bg-service-db";
+      // case "MONGO":
+      //   return "bg-service-mongo";
+      // case "NGINX":
+      //   return "bg-service-nginx";
+      // case "REDIS":
+      //   return "bg-service-redis";
+      case "MES_QAS_APP":
         return "bg-service-appserv";
-      case "WPCL":
-        return "bg-service-wpcl";
-      case "IOT":
-        return "bg-service-iot";
+      // case "WPCL":
+      //   return "bg-service-wpcl";
+      // case "IOT":
+      //   return "bg-service-iot";
       default:
         return "bg-muted";
     }
@@ -94,7 +94,7 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
 
       {open && (
         <TerminalModal
-          server="NGINX_PRD_SERVER_1"
+          server={serverItem.server}
           open={open}
           onClose={() => setOpen(false)}
         />

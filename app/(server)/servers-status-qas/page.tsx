@@ -4,14 +4,15 @@ import { ToggleTheme } from "@/components/toggle-theme";
 import {
   groupServersByType,
   SERVICE_TYPE_ORDER,
-} from "@/lib/helpers/group-by-type";
+} from "@/lib/helpers/group-by-type-qas";
 import { iServersStatusResponse } from "@/types/servers";
-
+import Image from "next/image";
+import TpvLogo from './../../../public/icons/tpvlogo.png';
 const API_URL = process.env.API_URL
 const PORT = process.env.PORT
 
 const ServerListPage = async () => {
-  const data = await fetch(`${API_URL}:${PORT}/api/status-all-qas`, {
+const data = await fetch(`${API_URL}:${PORT}/api/status-all-qas`, {
     cache: "no-store",
   });
 
@@ -21,10 +22,11 @@ const ServerListPage = async () => {
 
   return (
     <div className="min-h-screen">
-      <nav className="flex justify-between w-full p-3 bg-blue-300 items-center">
+      <nav className="flex justify-between w-full bg-tpv-main items-center pr-3">
         {/* left */}
-        <div>
-          <h1 className="text-2xl font-semibold">MES Server List</h1>
+        <div className="flex gap-2 items-center">
+          <Image src={TpvLogo} width={120} height={40} alt="tpv-logo"/>
+          <h1 className="text-2xl font-semibold text-white">MES Server List</h1>
         </div>
 
         {/* right */}
@@ -34,7 +36,7 @@ const ServerListPage = async () => {
         </div>
       </nav>
 
-      <main className="space-y-8 p-4">
+      <main className="space-y-8 p-4 dark:bg-secondary">
         {SERVICE_TYPE_ORDER.map((type) => {
           const list = groupedServers[type];
           if (!list || list.length === 0) return null;

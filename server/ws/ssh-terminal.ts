@@ -1,5 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import { WebSocketServer } from "ws";
 import { Client } from "ssh2";
+import { ALL_SERVERS } from "../../lib/utils/server-list";
 
 console.log("[WS] Starting SSH WebSocket server...");
 
@@ -14,8 +18,18 @@ wss.on("connection", (ws, req) => {
   const ip = req.socket.remoteAddress;
   console.log(`[WS] Client connected from ${ip}`);
 
-  const url = new URL(req.url!, WS_PORT.toString());
+  const url = new URL(req.url || "", `ws://${req.headers.host}`);
+
   const server = url.searchParams.get("server");
+
+  if (!server) {
+    ws.send("Missing server parameter");
+    ws.close();
+    return;
+  }
+
+  const sshConfig = ALL_SERVERS[server];
+  console.log(JSON.stringify(sshConfig, null, 2));
 
   console.log(`[WS] Requested server: ${server}`);
 
@@ -24,24 +38,37 @@ wss.on("connection", (ws, req) => {
   conn.on("ready", () => {
     console.log(`[SSH] Connected to ${server}`);
 
-    conn.shell((err, stream) => {
-      if (err) {
-        console.error("[SSH] Shell error:", err.message);
-        ws.close();
-        return;
+    conn.shell(
+      {
+        term: "xterm-256color",
+        cols: 100,
+        rows: 30,
+      },
+      (err, stream) => {
+        if (err) {
+          console.error("[SSH] Shell error:", err.message);
+          ws.close();
+          return;
+        }
+
+        console.log("[SSH] Shell opened");
+
+        stream.write("\n"); // <-- IMPORTANT
+
+        ws.on("message", (msg) => {
+        //   console.log("[WS] → SSH:", msg.toString());
+          stream.write(msg.toString());
+        });
+
+        stream.on("data", (data: Buffer) => ws.send(data.toString()));
+
+        ws.on("close", () => {
+          console.log("[WS] Client disconnected");
+          stream.end();
+          conn.end();
+        });
       }
-
-      console.log("[SSH] Shell opened");
-
-      ws.on("message", (msg) => stream.write(msg.toString()));
-      stream.on("data", (data: any) => ws.send(data.toString()));
-
-      ws.on("close", () => {
-        console.log("[WS] Client disconnected");
-        stream.end();
-        conn.end();
-      });
-    });
+    );
   });
 
   conn.on("error", (err) => {
@@ -49,9 +76,5 @@ wss.on("connection", (ws, req) => {
     ws.close();
   });
 
-  conn.connect({
-    host: "10.0.202.12",
-    username: "root",
-    password: "******",
-  });
+  conn.connect(sshConfig);
 });

@@ -258,6 +258,19 @@ export async function wpclCheckStatusProcess({ conn }: Props) {
 
   for (const service of wpclServices) {
     try {
+      // systemd-managed service
+      if (service === "nfs-server") {
+        const { active, pid } = await execSystemctlCommand(conn, service);
+
+        results.push({
+          service,
+          status: active ? "RUNNING" : "STOPPED",
+          pid,
+        });
+        continue;
+      }
+
+      // normal process
       const cmd = `pgrep -o -f ${service}`;
       const pid = await execGrepCommand(conn, cmd);
 
