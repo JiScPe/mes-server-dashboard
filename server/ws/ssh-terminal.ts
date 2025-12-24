@@ -41,8 +41,8 @@ wss.on("connection", (ws, req) => {
     conn.shell(
       {
         term: "xterm-256color",
-        cols: 100,
-        rows: 30,
+        // cols: 100,
+        // rows: 30,
       },
       (err, stream) => {
         if (err) {

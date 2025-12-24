@@ -23,22 +23,24 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
 
   function setCardBgColor(type: ServiceType): string {
     switch (type) {
-      // case "ZOOKEEPER":
-      //   return "bg-service-zoo";
-      // case "DB":
-      //   return "bg-service-db";
-      // case "MONGO":
-      //   return "bg-service-mongo";
-      // case "NGINX":
-      //   return "bg-service-nginx";
-      // case "REDIS":
-      //   return "bg-service-redis";
+      case "ZOOKEEPER":
+        return "bg-service-zoo";
+      case "DB":
+        return "bg-service-db";
+      case "MONGO":
+        return "bg-service-mongo";
+      case "NGINX":
+        return "bg-service-nginx";
+      case "REDIS":
+        return "bg-service-redis";
+      case "MES_PRD_APP":
+        return "bg-service-appserv";
       case "MES_QAS_APP":
         return "bg-service-appserv";
-      // case "WPCL":
-      //   return "bg-service-wpcl";
-      // case "IOT":
-      //   return "bg-service-iot";
+      case "WPCL":
+        return "bg-service-wpcl";
+      case "IOT":
+        return "bg-service-iot";
       default:
         return "bg-muted";
     }

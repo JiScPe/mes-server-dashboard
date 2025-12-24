@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
@@ -21,6 +21,13 @@ export default function XTermClient({
   const termRef = useRef<Terminal | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const socketReadyRef = useRef(false);
+  const fitAddon = new FitAddon();
+
+  useLayoutEffect(() => {
+    if (open) {
+      setTimeout(() => fitAddon.fit(), 0);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -45,8 +52,8 @@ export default function XTermClient({
         },
       });
 
-      const fitAddon = new FitAddon();
       term.loadAddon(fitAddon);
+      requestAnimationFrame(() => fitAddon.fit());
 
       term.open(terminalRef.current);
       fitAddon.fit();
@@ -104,7 +111,7 @@ export default function XTermClient({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent
         className="
-          max-w-none w-full p-0 bg-slate-900
+          w-full max-w-none p-0 bg-slate-900
           [&>button]:text-white
           [&>button]:hover:text-gray-300
           [&>button]:focus:ring-white
@@ -118,7 +125,7 @@ export default function XTermClient({
 
         <div
           ref={terminalRef}
-          className="w-full h-[calc(100vh-100px)] bg-slate-900"
+          className="w-full h-[calc(100vh-100px)] bg-slate-900 rounded-md overflow-hidden"
         />
       </DialogContent>
     </Dialog>

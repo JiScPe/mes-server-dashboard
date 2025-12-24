@@ -54,7 +54,7 @@ const data = await fetch(`${API_URL}:${PORT}/api/status-all-prd`, {
               </header>
 
               {/* Cards */}
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-3 w-full">
                 {list.map((serverItem) => (
                   <ServerCardItem
                     key={serverItem.server}
