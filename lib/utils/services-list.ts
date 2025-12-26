@@ -1,6 +1,6 @@
 // Your modules
 export const appServices = [
-  // "nfs-server",
+  "nfs-server",
   "cas",
   "ims-sysm",
   "ims-andon",
@@ -30,6 +30,6 @@ export const nginxServices = ["keepalived", "nginx"];
 
 export const redisServices = ["redis"];
 
-export const wpclServices = ["ims-wpcl", "ims-wpcl-rule"];
+export const wpclServices = ["nfs-server", "ims-wpcl", "ims-wpcl-rule"];
 
 export const iotServices = ["iot"];
