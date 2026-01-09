@@ -11,9 +11,17 @@ import {
   zooCheckStatusProcess,
 } from "./ssh-commands";
 
-type ServerType = "ZOOKEEPER" | "DB" | "MONGO" | "NGINX" | "REDIS" | "MES_PRD_APP" | "WPCL" | "IOT";
+type ServerType =
+  | "ZOOKEEPER"
+  | "DB"
+  | "MONGO"
+  | "NGINX"
+  | "REDIS"
+  | "MES_PRD_APP"
+  | "WPCL"
+  | "IOT";
 
-type StatusHandler = (conn: Client) => Promise<any>;
+type StatusHandler = (appConn: Client, nginxConn?: Client) => Promise<any>;
 
 /** * Open ONE SSH connection per server */ function openSSH(
   config: SSHConfig
@@ -28,14 +36,15 @@ type StatusHandler = (conn: Client) => Promise<any>;
 }
 
 const SERVER_HANDLERS: Record<ServerType, StatusHandler> = {
-  ZOOKEEPER: async (conn) => zooCheckStatusProcess({ conn }),
-  DB: async (conn) => dbCheckStatusProcess({ conn }),
-  MONGO: async (conn) => mongoCheckStatusProcess({ conn }),
-  NGINX: async (conn) => nginxCheckStatusProcess({ conn }),
-  REDIS: async (conn) => redisCheckStatusProcess({ conn }),
-  MES_PRD_APP: async (conn) => appCheckStatusProcess({ conn }),
-  WPCL: async (conn) => wpclCheckStatusProcess({ conn }),
-  IOT: async (conn) => iotCheckStatusProcess({ conn }),
+  ZOOKEEPER: async (appConn) => zooCheckStatusProcess({ appConn }),
+  DB: async (appConn) => dbCheckStatusProcess({ appConn }),
+  MONGO: async (appConn) => mongoCheckStatusProcess({ appConn }),
+  NGINX: async (appConn) => nginxCheckStatusProcess({ appConn }),
+  REDIS: async (appConn) => redisCheckStatusProcess({ appConn }),
+  MES_PRD_APP: async (appConn, nginxConn) =>
+    appCheckStatusProcess({ appConn, nginxConn }),
+  WPCL: async (appConn) => wpclCheckStatusProcess({ appConn }),
+  IOT: async (appConn) => iotCheckStatusProcess({ appConn }),
 };
 
 function detectServerTypes(serverName: string): ServerType[] {
@@ -53,11 +62,17 @@ function detectServerTypes(serverName: string): ServerType[] {
   return types;
 }
 
-export async function checkServer(serverName: string, config: SSHConfig) {
+export async function checkServer(
+  serverName: string,
+  config: SSHConfig,
+  nginxConfig?: SSHConfig
+) {
   let conn: Client | null = null;
+  let nginxConn: Client | null = null;
 
   try {
     conn = await openSSH(config);
+    nginxConn = await openSSH(nginxConfig!);
 
     const types = detectServerTypes(serverName);
     const services: any[] = [];
@@ -66,7 +81,7 @@ export async function checkServer(serverName: string, config: SSHConfig) {
       const handler = SERVER_HANDLERS[type];
       if (!handler) continue;
 
-      const result = await handler(conn);
+      const result = await handler(conn, nginxConn!);
       services.push({
         type,
         result,
@@ -87,5 +102,6 @@ export async function checkServer(serverName: string, config: SSHConfig) {
     };
   } finally {
     if (conn) conn.end();
+    if (nginxConn) nginxConn.end();
   }
 }

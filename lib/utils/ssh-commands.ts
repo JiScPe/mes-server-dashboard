@@ -10,9 +10,11 @@ import {
   zooServices,
 } from "./services-list";
 import { Client } from "ssh2";
+import { transformUpstreamResult } from "./check-nginx-upstream";
 
 type Props = {
-  conn: Client;
+  appConn: Client;
+  nginxConn?: Client;
 };
 
 /**
@@ -77,11 +79,11 @@ function execSystemctlCommand(
 }
 
 // zoo check status process
-export async function zooCheckStatusProcess({ conn }: Props) {
+export async function zooCheckStatusProcess({ appConn }: Props) {
   const results: any[] = [];
   for (const service of zooServices) {
     try {
-      const { active, pid } = await execSystemctlCommand(conn, service);
+      const { active, pid } = await execSystemctlCommand(appConn, service);
 
       results.push({
         service,
@@ -100,12 +102,12 @@ export async function zooCheckStatusProcess({ conn }: Props) {
   return results;
 }
 // db check status process
-export async function dbCheckStatusProcess({ conn }: Props) {
+export async function dbCheckStatusProcess({ appConn }: Props) {
   const results: any[] = [];
 
   for (const service of dbServices) {
     try {
-      const { active, pid } = await execSystemctlCommand(conn, service);
+      const { active, pid } = await execSystemctlCommand(appConn, service);
 
       results.push({
         service,
@@ -124,12 +126,12 @@ export async function dbCheckStatusProcess({ conn }: Props) {
   return results;
 }
 // mongo check status process
-export async function mongoCheckStatusProcess({ conn }: Props) {
+export async function mongoCheckStatusProcess({ appConn }: Props) {
   const results: any[] = [];
 
   for (const service of mongoServices) {
     try {
-      const { active, pid } = await execSystemctlCommand(conn, service);
+      const { active, pid } = await execSystemctlCommand(appConn, service);
 
       results.push({
         service,
@@ -149,14 +151,14 @@ export async function mongoCheckStatusProcess({ conn }: Props) {
 }
 
 // nginx check status process
-export async function nginxCheckStatusProcess({ conn }: Props) {
+export async function nginxCheckStatusProcess({ appConn }: Props) {
   const results: any[] = [];
 
   for (const service of nginxServices) {
     try {
       // systemd-managed service
       if (service === "keepalived") {
-        const { active, pid } = await execSystemctlCommand(conn, service);
+        const { active, pid } = await execSystemctlCommand(appConn, service);
 
         results.push({
           service,
@@ -168,7 +170,7 @@ export async function nginxCheckStatusProcess({ conn }: Props) {
 
       // normal process
       const cmd = `pgrep -o -f ${service}`;
-      const pid = await execGrepCommand(conn, cmd);
+      const pid = await execGrepCommand(appConn, cmd);
 
       results.push({
         service,
@@ -188,13 +190,13 @@ export async function nginxCheckStatusProcess({ conn }: Props) {
 }
 
 // redis check status process
-export async function redisCheckStatusProcess({ conn }: Props) {
+export async function redisCheckStatusProcess({ appConn }: Props) {
   const results: any[] = []; // ✅ local, isolated
 
   for (const service of redisServices) {
     try {
       const cmd = `pgrep -o -f ${service}`;
-      const pid = await execGrepCommand(conn, cmd);
+      const pid = await execGrepCommand(appConn, cmd);
 
       results.push({
         service,
@@ -214,14 +216,15 @@ export async function redisCheckStatusProcess({ conn }: Props) {
 }
 
 // app check status process
-export async function appCheckStatusProcess({ conn }: Props) {
+export async function appCheckStatusProcess({ appConn, nginxConn }: Props) {
+  
   const results: any[] = []; // ✅ local, isolated
 
   for (const service of appServices) {
     try {
       // systemd-managed service
       if (service === "nfs-server") {
-        const { active, pid } = await execSystemctlCommand(conn, service);
+        const { active, pid } = await execSystemctlCommand(appConn, service);
 
         results.push({
           service,
@@ -233,12 +236,18 @@ export async function appCheckStatusProcess({ conn }: Props) {
 
       // normal process
       const cmd = `pgrep -o -f ${service}`;
-      const pid = await execGrepCommand(conn, cmd);
+      const pid = await execGrepCommand(appConn, cmd);
 
+      const nginxCmd = `grep 'server 10' /home/prod/app/${service}/nginx/conf/${service}-upstream.conf`;
+      const nginxInteCmd = `grep 'server 10' /home/prod/app/${service}/nginx/conf/ims-integrate-upstream.conf`;
+      const nginxRes = await execGrepCommand(nginxConn!, service === 'integrate-server' ? nginxInteCmd : nginxCmd);
+      const nginxUpstream = transformUpstreamResult(nginxRes, "MES_PRD_APP");
+      
       results.push({
         service,
         status: pid ? "RUNNING" : "STOPPED",
         pid: pid || null,
+        nginx_upstream: nginxUpstream,
       });
     } catch {
       results.push({
@@ -253,14 +262,14 @@ export async function appCheckStatusProcess({ conn }: Props) {
 }
 
 // wpcl check status process
-export async function wpclCheckStatusProcess({ conn }: Props) {
+export async function wpclCheckStatusProcess({ appConn }: Props) {
   const results: any[] = []; // ✅ local, isolated
 
   for (const service of wpclServices) {
     try {
       // systemd-managed service
       if (service === "nfs-server") {
-        const { active, pid } = await execSystemctlCommand(conn, service);
+        const { active, pid } = await execSystemctlCommand(appConn, service);
 
         results.push({
           service,
@@ -272,7 +281,7 @@ export async function wpclCheckStatusProcess({ conn }: Props) {
 
       // normal process
       const cmd = `pgrep -o -f ${service}`;
-      const pid = await execGrepCommand(conn, cmd);
+      const pid = await execGrepCommand(appConn, cmd);
 
       results.push({
         service,
@@ -292,13 +301,13 @@ export async function wpclCheckStatusProcess({ conn }: Props) {
 }
 
 // iot check status process
-export async function iotCheckStatusProcess({ conn }: Props) {
+export async function iotCheckStatusProcess({ appConn }: Props) {
   const results: any[] = []; // ✅ local, isolated
 
   for (const service of iotServices) {
     try {
       const cmd = `pgrep -f ${service}`;
-      const pid = await execGrepCommand(conn, cmd);
+      const pid = await execGrepCommand(appConn, cmd);
 
       results.push({
         service,

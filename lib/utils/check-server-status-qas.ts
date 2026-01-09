@@ -13,7 +13,7 @@ import {
 
 type ServerType = "MES_QAS_APP";
 
-type StatusHandler = (conn: Client) => Promise<any>;
+type StatusHandler = (appConn: Client) => Promise<any>;
 
 /** * Open ONE SSH connection per server */ function openSSH(
   config: SSHConfig
@@ -33,7 +33,7 @@ const SERVER_HANDLERS: Record<ServerType, StatusHandler> = {
   // MONGO: async (conn) => mongoCheckStatusProcess({ conn }),
   // NGINX: async (conn) => nginxCheckStatusProcess({ conn }),
   // REDIS: async (conn) => redisCheckStatusProcess({ conn }),
-  MES_QAS_APP: async (conn) => appCheckStatusProcess({ conn }),
+  MES_QAS_APP: async (appConn) => appCheckStatusProcess({ appConn }),
   // WPCL: async (conn) => wpclCheckStatusProcess({ conn }),
   // IOT: async (conn) => iotCheckStatusProcess({ conn }),
 };

@@ -1,4 +1,5 @@
 // app/api/check-status/route.ts
+import { transformUpstreamResult } from "@/lib/utils/check-nginx-upstream";
 import { qas_servers } from "@/lib/utils/server-list";
 import { SSHConfig } from "@/types/servers";
 import { NextResponse } from "next/server";
@@ -34,7 +35,7 @@ function runSSHCommand(config: SSHConfig, command: string): Promise<string> {
         });
       })
       .on("error", (err) => {
-        console.log(err)
+        console.log(err);
         reject(err);
       })
       .connect(config);
@@ -53,7 +54,6 @@ export async function POST(request: Request) {
       );
     }
 
-
     const sshConfig = qas_servers[server];
     if (!sshConfig) {
       return NextResponse.json(
@@ -63,15 +63,15 @@ export async function POST(request: Request) {
     }
 
     // Linux command to check the process
-    const command = `systemctl status ${module}`;
+    const command = `grep 'server 10' /home/prod/app/${module}/nginx/conf/${module}-upstream.conf`;
 
     const result = await runSSHCommand(sshConfig, command);
-    const status = result.includes('active') ? "RUNNING" : "STOPPED";
+    const status = transformUpstreamResult(result, "MES_QAS_APP");
 
     return NextResponse.json({
       server,
       module,
-      status
+      nginx_upstream: status,
     });
   } catch (err: any) {
     return NextResponse.json(
