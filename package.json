@@ -7,7 +7,7 @@
     "build": "next build && tsc -p tsconfig.server.json",
     "ws:dev": "ts-node --project tsconfig.server.json -r tsconfig-paths/register server/ws/ssh-terminal.ts",
     "ws": "node -r tsconfig-paths/register dist/server/ws/ssh-terminal.js",
-    "start": "node server.js",
+    "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
