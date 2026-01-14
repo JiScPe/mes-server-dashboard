@@ -12,7 +12,6 @@ import {
 import { useState } from "react";
 import { TerminalIcon } from "lucide-react";
 import TerminalModal from "../terminal/TerminalModal";
-import { useServerListContext } from "../contexts/ServerListContext";
 
 type ServerCardItemProps = {
   serverItem: Server;
@@ -21,7 +20,6 @@ type ServerCardItemProps = {
 
 const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
   const [open, setOpen] = useState(false);
-  const {} = useServerListContext()
 
   function setCardBgColor(type: ServiceType): string {
     switch (type) {

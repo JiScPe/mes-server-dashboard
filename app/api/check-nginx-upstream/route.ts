@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     const command = `grep 'server 10' /home/prod/app/${module}/nginx/conf/${module}-upstream.conf`;
 
     const result = await runSSHCommand(sshConfig, command);
-    const status = transformUpstreamResult(result, "MES_QAS_APP");
+    const status = transformUpstreamResult(result, "MES_PRD_APP", module);
 
     return NextResponse.json({
       server,

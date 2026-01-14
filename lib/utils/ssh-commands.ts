@@ -241,7 +241,7 @@ export async function appCheckStatusProcess({ appConn, nginxConn }: Props) {
       const nginxCmd = `grep 'server 10' /home/prod/app/${service}/nginx/conf/${service}-upstream.conf`;
       const nginxInteCmd = `grep 'server 10' /home/prod/app/${service}/nginx/conf/ims-integrate-upstream.conf`;
       const nginxRes = await execGrepCommand(nginxConn!, service === 'integrate-server' ? nginxInteCmd : nginxCmd);
-      const nginxUpstream = transformUpstreamResult(nginxRes, "MES_PRD_APP");
+      const nginxUpstream = transformUpstreamResult(nginxRes, "MES_PRD_APP_", service);
       
       results.push({
         service,
