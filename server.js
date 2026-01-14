@@ -8,6 +8,8 @@ const port = process.env.PORT || 3000;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+console.log("NODE_ENV =", process.env.NODE_ENV);
+
 app.prepare().then(() => {
   createServer(async (req, res) => {
     try {
