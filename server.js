@@ -1,3 +1,4 @@
+const dotenv = require("dotenv");
 const { createServer } = require("http");
 const { parse } = require("url");
 const next = require("next");
@@ -7,6 +8,13 @@ const port = process.env.PORT || 3000;
 
 const app = next({ dev });
 const handle = app.getRequestHandler();
+
+dotenv.config({
+  path:
+    process.env.NODE_ENV === "production"
+      ? ".env.production"
+      : ".env.local",
+});
 
 console.log("NODE_ENV =", process.env.NODE_ENV);
 
