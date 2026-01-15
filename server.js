@@ -1,12 +1,17 @@
+const path = require("path");
 const dotenv = require("dotenv");
 const { createServer } = require("http");
 const { parse } = require("url");
 const next = require("next");
 
-const dev = process.env.NODE_ENV !== "production";
 const port = process.env.PORT || 3000;
+const NODE_ENV = process.env.NODE_ENV || "development";
+const envFile =
+  NODE_ENV === "production"
+    ? ".env.production"
+    : ".env.local";
 
-const app = next({ dev });
+const app = next({ NODE_ENV });
 const handle = app.getRequestHandler();
 
 dotenv.config({
@@ -16,7 +21,13 @@ dotenv.config({
       : ".env.local",
 });
 
-console.log("NODE_ENV =", process.env.NODE_ENV);
+const result = dotenv.config({
+  path: path.resolve(process.cwd(), envFile),
+});
+
+
+console.log("ENV FILE USED:", envFile);
+console.log("DOTENV RESULT:", result.parsed ? "LOADED" : result.error);
 
 app.prepare().then(() => {
   createServer(async (req, res) => {

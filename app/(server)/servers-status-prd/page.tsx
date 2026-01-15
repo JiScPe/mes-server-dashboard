@@ -11,6 +11,8 @@ import { ServerListProvider } from "@/components/contexts/ServerListContext";
 const API_URL = process.env.API_URL;
 const PORT = process.env.PORT;
 
+console.log("API_URL =", process.env.API_URL);
+
 type Props = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
