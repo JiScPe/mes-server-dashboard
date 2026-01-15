@@ -1,44 +1,50 @@
 const path = require("path");
-const dotenv = require("dotenv");
 const { createServer } = require("http");
-const { parse } = require("url");
 const next = require("next");
+const dotenv = require("dotenv");
 
-const port = process.env.PORT || 3000;
+/**
+ * 1. Resolve environment
+ */
 const NODE_ENV = process.env.NODE_ENV || "development";
-const envFile =
-  NODE_ENV === "production"
-    ? ".env.production"
-    : ".env.local";
+const isProd = NODE_ENV === "production";
 
-const app = next({ NODE_ENV });
-const handle = app.getRequestHandler();
-
-dotenv.config({
-  path:
-    process.env.NODE_ENV === "production"
-      ? ".env.production"
-      : ".env.local",
-});
+/**
+ * 2. Load environment variables ONCE
+ *    (before Next.js is initialized)
+ */
+const envFile = isProd ? ".env.production.local" : ".env.local";
 
 const result = dotenv.config({
   path: path.resolve(process.cwd(), envFile),
 });
 
-
+console.log("NODE_ENV:", NODE_ENV);
 console.log("ENV FILE USED:", envFile);
-console.log("DOTENV RESULT:", result.parsed ? "LOADED" : result.error);
+console.log(
+  "DOTENV STATUS:",
+  result.error ? result.error.message : "LOADED"
+);
 
+/**
+ * 3. App config
+ */
+const port = process.env.PORT || 3000;
+
+const app = next({
+  dev: !isProd,
+  hostname: "localhost",
+  port,
+});
+
+const handle = app.getRequestHandler();
+
+/**
+ * 4. Start server
+ */
 app.prepare().then(() => {
-  createServer(async (req, res) => {
-    try {
-      const parsedUrl = parse(req.url, true);
-      await handle(req, res, parsedUrl);
-    } catch (err) {
-      console.error("Error occurred handling", req.url, err);
-      res.statusCode = 500;
-      res.end("internal server error");
-    }
+  createServer((req, res) => {
+    handle(req, res);
   }).listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`);
   });
