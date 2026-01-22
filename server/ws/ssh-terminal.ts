@@ -5,76 +5,92 @@ import { WebSocketServer } from "ws";
 import { Client } from "ssh2";
 import { ALL_SERVERS } from "../../lib/utils/server-list";
 
-console.log("[WS] Starting SSH WebSocket server...");
-
-const WS_PORT: number = parseInt(process.env.WS_PORT || "3001");
+const WS_PORT = parseInt(process.env.WS_PORT || "3001");
 const wss = new WebSocketServer({ port: WS_PORT });
 
-wss.on("listening", () => {
-  console.log(`[WS] Listening on port ${WS_PORT}`);
-});
+console.log(`[WS] Listening on port ${WS_PORT}`);
 
 wss.on("connection", (ws, req) => {
-  const ip = req.socket.remoteAddress;
-  console.log(`[WS] Client connected from ${ip}`);
-
   const url = new URL(req.url || "", `ws://${req.headers.host}`);
+  const serverKey = url.searchParams.get("server");
 
-  const server = url.searchParams.get("server");
-
-  if (!server) {
-    ws.send("Missing server parameter");
+  if (!serverKey || !ALL_SERVERS[serverKey]) {
+    ws.send("Invalid server");
     ws.close();
     return;
   }
 
-  const sshConfig = ALL_SERVERS[server];
-  console.log(JSON.stringify(sshConfig, null, 2));
-
-  console.log(`[WS] Requested server: ${server}`);
-
+  const baseConfig = ALL_SERVERS[serverKey];
   const conn = new Client();
 
-  conn.on("ready", () => {
-    console.log(`[SSH] Connected to ${server}`);
+  let authenticated = false;
+  let shellStream: any;
 
-    conn.shell(
-      {
-        term: "xterm-256color",
-        // cols: 100,
-        // rows: 30,
-      },
-      (err, stream) => {
-        if (err) {
-          console.error("[SSH] Shell error:", err.message);
+  ws.send("AUTH_REQUIRED");
+
+  ws.on("message", (raw) => {
+    const message = raw.toString();
+
+    /** Step 1: Expect AUTH payload */
+    if (!authenticated) {
+      try {
+        const payload = JSON.parse(message);
+
+        if (payload.type !== "AUTH" || !payload.password) {
+          ws.send("AUTH_INVALID");
           ws.close();
           return;
         }
 
-        console.log("[SSH] Shell opened");
+        authenticated = true;
 
-        stream.write("\n"); // <-- IMPORTANT
+        conn.on("ready", () => {
+          conn.shell(
+            { term: "xterm-256color" },
+            (err, stream) => {
+              if (err) {
+                ws.send("SHELL_ERROR");
+                ws.close();
+                return;
+              }
 
-        ws.on("message", (msg) => {
-        //   console.log("[WS] → SSH:", msg.toString());
-          stream.write(msg.toString());
+              shellStream = stream;
+              stream.write("\n");
+
+              stream.on("data", (data: Buffer) => {
+                ws.send(data.toString());
+              });
+            }
+          );
         });
 
-        stream.on("data", (data: Buffer) => ws.send(data.toString()));
-
-        ws.on("close", () => {
-          console.log("[WS] Client disconnected");
-          stream.end();
-          conn.end();
+        conn.on("error", (err) => {
+          ws.send(`SSH_ERROR: ${err.message}`);
+          ws.close();
         });
+
+        /** Step 2: Connect with dynamic password */
+        conn.connect({
+          ...baseConfig,
+          password: payload.password,
+        });
+
+      } catch {
+        ws.send("AUTH_PARSE_ERROR");
+        ws.close();
       }
-    );
+
+      return;
+    }
+
+    /** Step 3: Normal terminal input */
+    if (shellStream) {
+      shellStream.write(message);
+    }
   });
 
-  conn.on("error", (err) => {
-    console.error("[SSH] Connection error:", err.message);
-    ws.close();
+  ws.on("close", () => {
+    shellStream?.end();
+    conn.end();
   });
-
-  conn.connect(sshConfig);
 });
