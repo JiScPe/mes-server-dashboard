@@ -14,7 +14,7 @@ const MainNavbar = () => {
       {/* left */}
       <div className="flex gap-2 items-center">
         <Image src={TpvLogo} width={120} height={40} alt="tpv-logo" />
-        <h1 className="text-2xl font-semibold text-white">MES Server List</h1>
+        <h1 className="text-2xl font-semibold text-white">MES Services Monitoring</h1>
       </div>
 
       {/* right */}
