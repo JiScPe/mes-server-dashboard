@@ -2,7 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 const ONE_DAY = 60 * 60 * 24; // seconds
-const FIVE_MINUTES = 60 * 5; // seconds
+// const FIVE_MINUTES = 60 * 5; // seconds
 
 const handler = NextAuth({
   providers: [
@@ -34,10 +34,10 @@ const handler = NextAuth({
   ],
   session: {
     strategy: "jwt",
-    maxAge: FIVE_MINUTES,
+    maxAge: ONE_DAY,
   },
   jwt: {
-    maxAge: FIVE_MINUTES,
+    maxAge: ONE_DAY,
   },
   pages: {
     signIn: "/login",
