@@ -8,7 +8,6 @@ const dotenv = require("dotenv");
  */
 const NODE_ENV = process.env.NODE_ENV || "development";
 const isProd = NODE_ENV === "production";
-const authPass = process.env.AUTH_PASSWORD
 
 /**
  * 2. Load environment variables ONCE
@@ -19,6 +18,8 @@ const envFile = isProd ? ".env.production.local" : ".env.local";
 const result = dotenv.config({
   path: path.resolve(process.cwd(), envFile),
 });
+
+const authPass = process.env.AUTH_PASSWORD
 
 console.log("NODE_ENV:", NODE_ENV);
 console.log("ENV FILE USED:", envFile);
