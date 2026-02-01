@@ -21,7 +21,7 @@ const ServerListPage = async ({ searchParams }: Props) => {
   const queryParams = await searchParams;
 
   const res = await fetch(
-    `${API_URL}:${PORT}/api/status-all-prd?nginxserv=${queryParams}`,
+    `${API_URL}:${PORT}/api/status-all-prd`,
     { cache: "no-store" }
   );
 

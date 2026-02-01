@@ -6,6 +6,7 @@ import SelectNginx from "./SelectNginx";
 import RefreshStatusButton from "./RefreshStatusButton";
 import TpvLogo from "./../../public/icons/tpvlogo.png";
 import { useServerListContext } from "../contexts/ServerListContext";
+import { LogoutButton } from "./LogoutButton";
 
 const MainNavbar = () => {
   const { queryParams } = useServerListContext();
@@ -22,6 +23,7 @@ const MainNavbar = () => {
         <ToggleTheme />
         {/* <SelectNginx nginxserv={queryParams.nginxserv} /> */}
         <RefreshStatusButton />
+        <LogoutButton />
       </div>
     </nav>
   );
