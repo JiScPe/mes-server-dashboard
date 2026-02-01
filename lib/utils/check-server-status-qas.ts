@@ -11,17 +11,9 @@ import {
   zooCheckStatusProcess,
 } from "./ssh-commands";
 
-type ServerType =
-  // | "ZOOKEEPER"
-  // | "DB"
-  // | "MONGO"
-  // | "NGINX"
-  // | "REDIS"
-  | "MES_QAS_APP"
-  // | "WPCL"
-  // | "IOT";
+type ServerType = "MES_QAS_APP";
 
-type StatusHandler = (appConn: Client, nginxConn?: Client) => Promise<any>;
+type StatusHandler = (appConn: Client) => Promise<any>;
 
 /** * Open ONE SSH connection per server */ function openSSH(
   config: SSHConfig
@@ -36,43 +28,29 @@ type StatusHandler = (appConn: Client, nginxConn?: Client) => Promise<any>;
 }
 
 const SERVER_HANDLERS: Record<ServerType, StatusHandler> = {
-  // ZOOKEEPER: async (appConn) => zooCheckStatusProcess({ appConn }),
-  // DB: async (appConn) => dbCheckStatusProcess({ appConn }),
-  // MONGO: async (appConn) => mongoCheckStatusProcess({ appConn }),
-  // NGINX: async (appConn) => nginxCheckStatusProcess({ appConn }),
-  // REDIS: async (appConn) => redisCheckStatusProcess({ appConn }),
-  MES_QAS_APP: async (appConn, nginxConn) =>
-    appCheckStatusProcess({ appConn, nginxConn }),
-  // WPCL: async (appConn) => wpclCheckStatusProcess({ appConn }),
-  // IOT: async (appConn) => iotCheckStatusProcess({ appConn }),
+  // ZOOKEEPER: async (conn) => zooCheckStatusProcess({ conn }),
+  // DB: async (conn) => dbCheckStatusProcess({ conn }),
+  // MONGO: async (conn) => mongoCheckStatusProcess({ conn }),
+  // NGINX: async (conn) => nginxCheckStatusProcess({ conn }),
+  // REDIS: async (conn) => redisCheckStatusProcess({ conn }),
+  MES_QAS_APP: async (appConn) => appCheckStatusProcess({ appConn }),
+  // WPCL: async (conn) => wpclCheckStatusProcess({ conn }),
+  // IOT: async (conn) => iotCheckStatusProcess({ conn }),
 };
 
 function detectServerTypes(serverName: string): ServerType[] {
   const types: ServerType[] = [];
 
-  // if (serverName.includes("ZOO")) types.push("ZOOKEEPER");
-  // if (serverName.includes("DB")) types.push("DB");
-  // if (serverName.includes("MONGO")) types.push("MONGO");
-  // if (serverName.includes("NGINX")) types.push("NGINX");
-  // if (serverName.includes("REDIS")) types.push("REDIS");
   if (serverName.includes("MES_QAS_APP")) types.push("MES_QAS_APP");
-  // if (serverName.includes("WPCL")) types.push("WPCL");
-  // if (serverName.includes("IOT")) types.push("IOT");
 
   return types;
 }
 
-export async function checkQASServer(
-  serverName: string,
-  config: SSHConfig,
-  nginxConfig?: SSHConfig
-) {
+export async function checkQASServer(serverName: string, config: SSHConfig) {
   let conn: Client | null = null;
-  let nginxConn: Client | null = null;
 
   try {
     conn = await openSSH(config);
-    nginxConn = await openSSH(nginxConfig!);
 
     const types = detectServerTypes(serverName);
     const services: any[] = [];
@@ -81,7 +59,7 @@ export async function checkQASServer(
       const handler = SERVER_HANDLERS[type];
       if (!handler) continue;
 
-      const result = await handler(conn, nginxConn!);
+      const result = await handler(conn);
       services.push({
         type,
         result,
@@ -102,6 +80,5 @@ export async function checkQASServer(
     };
   } finally {
     if (conn) conn.end();
-    if (nginxConn) nginxConn.end();
   }
 }

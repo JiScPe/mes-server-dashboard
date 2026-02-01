@@ -20,14 +20,7 @@ export default function XTermClient({
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const termRef = useRef<Terminal | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
-
   const socketReadyRef = useRef(false);
-
-  /** AUTH FLOW STATE */
-  const authRequiredRef = useRef(false);
-  const isAuthenticatedRef = useRef(false);
-  const passwordBufferRef = useRef("");
-
   const fitAddon = new FitAddon();
 
   useLayoutEffect(() => {
@@ -42,7 +35,12 @@ export default function XTermClient({
     let rafId: number;
 
     rafId = requestAnimationFrame(() => {
-      if (!terminalRef.current) return;
+      if (!terminalRef.current) {
+        console.warn("[XTERM] terminalRef not ready");
+        return;
+      }
+
+      console.log("[XTERM] Initializing terminal");
 
       const term = new Terminal({
         cursorBlink: true,
@@ -55,79 +53,31 @@ export default function XTermClient({
       });
 
       term.loadAddon(fitAddon);
+      requestAnimationFrame(() => fitAddon.fit());
+
       term.open(terminalRef.current);
       fitAddon.fit();
       term.focus();
 
-      const ws = new WebSocket(
-        `ws://localhost:${WS_PORT}?server=${server}`
-      );
+      const ws = new WebSocket(`ws://localhost:${WS_PORT}?server=${server}`);
 
       ws.onopen = () => {
         socketReadyRef.current = true;
-        term.writeln("\r\nConnected.");
+        console.log("[WS] Connected");
+        term.write("\r\n\x1b[32mConnected to server\x1b[0m\r\n");
       };
 
-      ws.onerror = () => {
-        term.writeln("\r\nWebSocket error.");
+      ws.onerror = (err) => {
+        console.error("[WS] Error", err);
+        term.write("\r\n\x1b[31mWebSocket error\x1b[0m\r\n");
       };
 
-      ws.onmessage = (e) => {
-        const msg = e.data as string;
+      ws.onmessage = (e) => term.write(e.data);
 
-        /** AUTH REQUEST FROM SERVER */
-        if (msg === "AUTH_REQUIRED") {
-          authRequiredRef.current = true;
-          term.writeln("\r\nPassword:");
-          return;
-        }
-
-        term.write(msg);
-      };
-
-      /** TERMINAL INPUT HANDLER */
       term.onData((data) => {
-        if (!socketReadyRef.current || !wsRef.current) return;
-
-        /** PASSWORD MODE */
-        if (authRequiredRef.current && !isAuthenticatedRef.current) {
-          const char = data.charCodeAt(0);
-
-          // ENTER
-          if (char === 13) {
-            ws.send(
-              JSON.stringify({
-                type: "AUTH",
-                password: passwordBufferRef.current,
-              })
-            );
-
-            passwordBufferRef.current = "";
-            authRequiredRef.current = false;
-            isAuthenticatedRef.current = true;
-
-            term.write("\r\n");
-            return;
-          }
-
-          // BACKSPACE
-          if (char === 127) {
-            if (passwordBufferRef.current.length > 0) {
-              passwordBufferRef.current =
-                passwordBufferRef.current.slice(0, -1);
-              term.write("\b \b");
-            }
-            return;
-          }
-
-          // NORMAL CHAR → MASK
-          passwordBufferRef.current += data;
-          term.write("*");
-          return;
+        if (socketReadyRef.current) {
+          ws.send(data);
         }
-
-        /** NORMAL TERMINAL MODE */
-        ws.send(data);
       });
 
       const onResize = () => fitAddon.fit();
@@ -136,6 +86,7 @@ export default function XTermClient({
       termRef.current = term;
       wsRef.current = ws;
 
+      // cleanup
       return () => {
         window.removeEventListener("resize", onResize);
       };
@@ -145,15 +96,14 @@ export default function XTermClient({
       cancelAnimationFrame(rafId);
 
       socketReadyRef.current = false;
-      authRequiredRef.current = false;
-      isAuthenticatedRef.current = false;
-      passwordBufferRef.current = "";
 
       wsRef.current?.close();
       wsRef.current = null;
 
       termRef.current?.dispose();
       termRef.current = null;
+
+      console.log("[XTERM] Disposed");
     };
   }, [open, server]);
 
@@ -163,6 +113,8 @@ export default function XTermClient({
         className="
           w-full max-w-none p-0 bg-slate-900
           [&>button]:text-white
+          [&>button]:hover:text-gray-300
+          [&>button]:focus:ring-white
         "
       >
         <DialogHeader className="px-4 py-2 border-b border-white/10">
@@ -173,7 +125,7 @@ export default function XTermClient({
 
         <div
           ref={terminalRef}
-          className="w-full h-[calc(100vh-100px)] bg-slate-900"
+          className="w-full h-[calc(100vh-100px)] bg-slate-900 rounded-md overflow-hidden"
         />
       </DialogContent>
     </Dialog>
