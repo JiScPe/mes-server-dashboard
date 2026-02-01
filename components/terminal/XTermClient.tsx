@@ -6,6 +6,7 @@ import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 
+const WS_HOST = process.env.NEXT_PUBLIC_WS_HOST;
 const WS_PORT = process.env.NEXT_PUBLIC_WS_PORT;
 
 export default function XTermClient({
@@ -59,7 +60,7 @@ export default function XTermClient({
       fitAddon.fit();
       term.focus();
 
-      const ws = new WebSocket(`ws://localhost:${WS_PORT}?server=${server}`);
+      const ws = new WebSocket(`ws://${WS_HOST}:${WS_PORT}?server=${server}`);
 
       ws.onopen = () => {
         socketReadyRef.current = true;
