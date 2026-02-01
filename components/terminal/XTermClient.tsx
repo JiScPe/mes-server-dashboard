@@ -64,7 +64,7 @@ export default function XTermClient({
 
       ws.onopen = () => {
         socketReadyRef.current = true;
-        console.log("[WS] Connected");
+        console.log(`[WS] Connected to ${WS_HOST}:${WS_PORT}`);
         term.write("\r\n\x1b[32mConnected to server\x1b[0m\r\n");
       };
 
