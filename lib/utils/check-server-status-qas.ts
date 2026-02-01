@@ -1,22 +1,13 @@
 import { SSHConfig } from "@/types/servers";
 import { Client } from "ssh2";
-import {
-  appCheckStatusProcess,
-  dbCheckStatusProcess,
-  iotCheckStatusProcess,
-  mongoCheckStatusProcess,
-  nginxCheckStatusProcess,
-  redisCheckStatusProcess,
-  wpclCheckStatusProcess,
-  zooCheckStatusProcess,
-} from "./ssh-commands";
+import { appCheckStatusProcess } from "./ssh-commands";
 
 type ServerType = "MES_QAS_APP";
 
-type StatusHandler = (appConn: Client) => Promise<any>;
+type StatusHandler = (appConn: Client, nginxConn?: Client) => Promise<any>;
 
 /** * Open ONE SSH connection per server */ function openSSH(
-  config: SSHConfig
+  config: SSHConfig,
 ): Promise<Client> {
   return new Promise((resolve, reject) => {
     const conn = new Client();
@@ -33,7 +24,8 @@ const SERVER_HANDLERS: Record<ServerType, StatusHandler> = {
   // MONGO: async (conn) => mongoCheckStatusProcess({ conn }),
   // NGINX: async (conn) => nginxCheckStatusProcess({ conn }),
   // REDIS: async (conn) => redisCheckStatusProcess({ conn }),
-  MES_QAS_APP: async (appConn) => appCheckStatusProcess({ appConn }),
+  MES_QAS_APP: async (appConn, nginxConn) =>
+    appCheckStatusProcess({ appConn, nginxConn }),
   // WPCL: async (conn) => wpclCheckStatusProcess({ conn }),
   // IOT: async (conn) => iotCheckStatusProcess({ conn }),
 };
@@ -46,11 +38,17 @@ function detectServerTypes(serverName: string): ServerType[] {
   return types;
 }
 
-export async function checkQASServer(serverName: string, config: SSHConfig) {
+export async function checkQASServer(
+  serverName: string,
+  config: SSHConfig,
+  nginxConfig?: SSHConfig,
+) {
   let conn: Client | null = null;
+  let nginxConn: Client | null = null;
 
   try {
     conn = await openSSH(config);
+    nginxConn = await openSSH(nginxConfig!);
 
     const types = detectServerTypes(serverName);
     const services: any[] = [];
@@ -59,7 +57,7 @@ export async function checkQASServer(serverName: string, config: SSHConfig) {
       const handler = SERVER_HANDLERS[type];
       if (!handler) continue;
 
-      const result = await handler(conn);
+      const result = await handler(conn, nginxConn!);
       services.push({
         type,
         result,
@@ -80,5 +78,6 @@ export async function checkQASServer(serverName: string, config: SSHConfig) {
     };
   } finally {
     if (conn) conn.end();
+    if (nginxConn) nginxConn.end();
   }
 }

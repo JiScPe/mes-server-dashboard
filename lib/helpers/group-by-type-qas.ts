@@ -1,6 +1,6 @@
 import { Server } from "@/types/servers";
 
-export const SERVICE_TYPE_ORDER = [
+export const SERVICE_TYPE_ORDER_QAS = [
   // "ZOOKEEPER",
   // "DB",
   // "MONGO",
@@ -11,10 +11,10 @@ export const SERVICE_TYPE_ORDER = [
   // "IOT",
 ] as const;
 
-export function groupServersByType(servers: Server[]) {
+export function groupServersByTypeQAS(servers: Server[]) {
   const map: Record<string, Server[]> = {};
 
-  for (const type of SERVICE_TYPE_ORDER) {
+  for (const type of SERVICE_TYPE_ORDER_QAS) {
     map[type] = [];
   }
 
