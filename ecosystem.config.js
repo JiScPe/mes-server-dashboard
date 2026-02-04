@@ -6,7 +6,7 @@ module.exports = {
       env: {
         NODE_ENV: "production"
       },
-      env_file: ".env.ws.production",
+      env_file: ".env.ws.productiontest",
       instances: 1,
       autorestart: true,
       watch: false,

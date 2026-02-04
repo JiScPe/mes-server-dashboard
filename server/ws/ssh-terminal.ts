@@ -5,6 +5,26 @@ import { WebSocketServer } from "ws";
 import { Client } from "ssh2";
 import { ALL_SERVERS } from "../../lib/utils/server-list";
 
+// --- START VALIDATION BLOCK ---
+console.log("----------------------------------------");
+console.log("[System] Validating Server List...");
+
+const serverKeys = Object.keys(ALL_SERVERS || {});
+
+if (serverKeys.length === 0) {
+  console.error("❌ FATAL: No servers found in ALL_SERVERS. Check '../../lib/utils/server-list'");
+  process.exit(1); // Exit if no servers are loaded
+}
+
+console.log(`✅ Loaded ${serverKeys.length} server(s): [ ${serverKeys.join(", ")} ]`);
+
+// Show a sample of the first server to verify structure (be careful with passwords in logs)
+const sampleKey = serverKeys[0];
+console.log(`\n🔍 Sample Config for '${sampleKey}':`);
+console.log(JSON.stringify(ALL_SERVERS[sampleKey], null, 2));
+console.log("----------------------------------------\n");
+// --- END VALIDATION BLOCK ---
+
 console.log("[WS] Starting SSH WebSocket server...");
 
 const WS_PORT: number = parseInt(process.env.WS_PORT || "3001");
