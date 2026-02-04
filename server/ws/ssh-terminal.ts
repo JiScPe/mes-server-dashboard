@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+
+// Explicitly tell dotenv to load .env.ws.production from the current working directory
+dotenv.config({ path: path.resolve(process.cwd(), ".env.ws.production") });
 
 import { WebSocketServer } from "ws";
 import { Client } from "ssh2";
