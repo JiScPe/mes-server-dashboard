@@ -1,0 +1,269 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model contents {
+  production    String?  @db.VarChar(64)
+  prd_table     String?  @db.VarChar(64)
+  process_qty   String?  @db.VarChar(64)
+  pq_table      String?  @db.VarChar(64)
+  outgoing_qtys String?  @db.VarChar(128)
+  oq_tables     String?  @db.VarChar(256)
+  etcs          String?  @db.VarChar(128)
+  etc_tables    String?  @db.VarChar(128)
+  ins_dtts      DateTime @default(now()) @db.Timestamp(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model dbinfo {
+  db_type           String?  @db.VarChar(32)
+  username          String?  @db.VarChar(64)
+  password          String?  @db.VarChar(64)
+  url               String?  @db.VarChar(256)
+  driver_class_name String?  @db.VarChar(128)
+  service_name      String?  @db.VarChar(64)
+  ip                String?  @db.VarChar(64)
+  port              String?  @db.VarChar(64)
+  ins_dtts          DateTime @default(now()) @db.Timestamp(6)
+
+  @@ignore
+}
+
+model ipaas {
+  system_key               String   @id @db.VarChar(35)
+  username                 String   @db.VarChar(512)
+  password                 String   @db.VarChar(512)
+  client_id                String   @db.VarChar(512)
+  client_secret            String   @db.VarChar(512)
+  pusername                String   @db.VarChar(512)
+  ppassword                String   @db.VarChar(512)
+  pclient_id               String   @db.VarChar(512)
+  pclient_secret           String   @db.VarChar(512)
+  access_token             String?  @db.VarChar(512)
+  access_token_expires_in  BigInt?
+  refresh_token            String?  @db.VarChar(512)
+  refresh_token_expires_in BigInt?
+  token_issue_url          String?  @db.VarChar(512)
+  api_url                  String?  @db.VarChar(512)
+  create_dtts              DateTime @default(now()) @db.Timestamp(6)
+  update_dtts              DateTime @default(now()) @db.Timestamp(6)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model somos {
+  agent_id     String?  @db.VarChar(32)
+  factory_code String?  @db.VarChar(8)
+  if_id        String?  @db.VarChar(64)
+  if_password  String?  @db.VarChar(64)
+  ins_dtts     DateTime @default(now()) @db.Timestamp(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model systems {
+  mode       String?  @db.VarChar(16)
+  os         String?  @db.VarChar(32)
+  proxy_ip   String?  @db.VarChar(64)
+  proxy_port String?  @db.VarChar(16)
+  agent_port String?  @db.VarChar(16)
+  ins_dtts   DateTime @default(now()) @db.Timestamp(6)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model ti_agent_ctq_if {
+  transaction_id           String? @db.VarChar(50)
+  api_id                   String? @db.VarChar(50)
+  if_status                String? @db.VarChar(2)
+  if_send_date             String? @db.VarChar(8)
+  if_send_time             String? @db.VarChar(6)
+  customer_code            String? @db.VarChar(35)
+  site_code                String  @db.VarChar(5)
+  model_name               String  @db.VarChar(101)
+  insp_date                String? @db.VarChar(9)
+  line_name                String? @db.VarChar(50)
+  time                     String? @db.VarChar(9)
+  sn                       String? @db.VarChar(50)
+  inspection_element_code  String? @db.VarChar(50)
+  inspection_sorting_order String? @db.VarChar(9)
+  inspection_value         String  @db.VarChar(30)
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ti_agent_test_file_attachments {
+  transaction_id     String? @db.VarChar(50)
+  api_id             String? @db.VarChar(50)
+  if_status          String? @db.VarChar(2)
+  if_send_date       String? @db.VarChar(8)
+  if_send_time       String? @db.VarChar(6)
+  customer_code      String? @db.VarChar(35)
+  reference_key      String  @db.VarChar(500)
+  reference_cd       String  @db.VarChar(4)
+  sequence           Decimal @db.Decimal(3, 0)
+  file_name          String? @db.VarChar(500)
+  file_path          String? @db.VarChar(500)
+  countermeasure_seq String  @db.VarChar(50)
+
+  @@id([reference_key, reference_cd, countermeasure_seq, sequence], map: "ti_agent_test_file_attachments_pk")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ti_agent_test_outgoing_quality_countermeasure {
+  transaction_id             String?  @db.VarChar(50)
+  api_id                     String?  @db.VarChar(50)
+  if_status                  String?  @db.VarChar(2)
+  if_send_date               String?  @db.VarChar(8)
+  if_send_time               String?  @db.VarChar(6)
+  out_quality_master_key     String   @db.VarChar(151)
+  countermeasure_seq         String   @db.VarChar(36)
+  defect_symptom_description String?  @db.VarChar(501)
+  serial_number              String   @db.VarChar(16)
+  causes_description         String?  @db.VarChar(501)
+  action_description         String?  @db.VarChar(501)
+  action_user_name           String?  @db.VarChar(51)
+  action_date                String?  @db.VarChar(9)
+  action_status_code         String?  @db.VarChar(5)
+  improvement_description    String?  @db.VarChar(501)
+  improvement_user_name      String?  @db.VarChar(51)
+  improvement_date           String?  @db.VarChar(9)
+  improvement_status_code    String?  @db.VarChar(5)
+  inspection_item_code       String?  @db.VarChar(5)
+  defect_count               Decimal? @db.Decimal(4, 0)
+  symptom_code               String?  @db.VarChar(5)
+  defect_type_code           String?  @db.VarChar(5)
+  judgement_code             String?  @db.VarChar(5)
+  inspection_type_code       String?  @db.VarChar(8)
+
+  @@id([out_quality_master_key, countermeasure_seq, serial_number], map: "ti_agent_test_outgoing_quality_countermeasure_pk")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ti_agent_test_outgoing_quality_detail {
+  transaction_id           String? @db.VarChar(50)
+  api_id                   String? @db.VarChar(50)
+  if_status                String? @db.VarChar(2)
+  if_send_date             String? @db.VarChar(8)
+  if_send_time             String? @db.VarChar(6)
+  out_quality_master_key   String  @db.VarChar(151)
+  inspection_item_code     String  @db.VarChar(5)
+  inspection_element_code  String  @db.VarChar(7)
+  inspection_sorting_order Decimal @db.Decimal(4, 0)
+  inspection_value         String? @db.VarChar(51)
+
+  @@id([out_quality_master_key, inspection_item_code, inspection_element_code, inspection_sorting_order], map: "ti_agent_test_outgoing_quality_detail_pk")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ti_agent_test_outgoing_quality_master {
+  transaction_id           String?  @db.VarChar(50)
+  api_id                   String?  @db.VarChar(50)
+  if_status                String?  @db.VarChar(2)
+  if_send_date             String?  @db.VarChar(8)
+  if_send_time             String?  @db.VarChar(6)
+  customer_code            String?  @db.VarChar(4)
+  site_code                String?  @db.VarChar(5)
+  model_name               String?  @db.VarChar(101)
+  out_quality_master_key   String   @db.VarChar(151)
+  product_date             String   @db.VarChar(9)
+  lot_no                   String   @db.VarChar(101)
+  inspection_type_code     String   @db.VarChar(5)
+  inspection_step_code     String   @db.VarChar(5)
+  po_no                    String?  @db.VarChar(16)
+  product_type_code        String?  @db.VarChar(5)
+  change_code              String?  @db.VarChar(5)
+  change_description       String?  @db.VarChar(36)
+  production_quantity      Decimal? @db.Decimal(11, 0)
+  serial_number_range_from String?  @db.VarChar(16)
+  serial_number_range_to   String?  @db.VarChar(16)
+  product_code             String?  @db.VarChar(30)
+  sample_quantity          Decimal? @db.Decimal
+  inspection_date          String?  @db.VarChar(8)
+
+  @@id([product_date, lot_no, inspection_type_code, inspection_step_code], map: "ti_agent_test_outgoing_quality_master_pk")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ti_agent_test_prd_mng_product_info_if {
+  transaction_id       String? @db.VarChar(50)
+  api_id               String? @db.VarChar(50)
+  if_status            String? @db.VarChar(2)
+  if_send_date         String? @db.VarChar(8)
+  if_send_time         String? @db.VarChar(6)
+  customer_code        String? @db.VarChar(35)
+  site_code            String? @db.VarChar(5)
+  model_name           String? @db.VarChar(101)
+  serial_number        String  @id(map: "ti_agent_test_prd_mng_product_info_if_pk") @db.VarChar(16)
+  esn_ime              String? @db.VarChar(16)
+  product_date         String? @db.VarChar(9)
+  product_time         String? @db.VarChar(6)
+  lot_no               String? @db.VarChar(101)
+  product_line         String? @db.VarChar(36)
+  po_no                String? @db.VarChar(16)
+  delivery_date        String? @db.VarChar(9)
+  delivery_order       String? @db.VarChar(16)
+  delivery_destination String? @db.VarChar(101)
+  e_pass1              String? @db.VarChar(101)
+  e_pass2              String? @db.VarChar(101)
+  e_pass3              String? @db.VarChar(101)
+  e_pass4              String? @db.VarChar(101)
+  e_pass5              String? @db.VarChar(101)
+  e_pass6              String? @db.VarChar(101)
+  e_pass7              String? @db.VarChar(101)
+  e_pass8              String? @db.VarChar(101)
+  e_pass9              String? @db.VarChar(101)
+  e_pass10             String? @db.VarChar(101)
+  sw_version           String? @db.VarChar(101)
+  hw_version           String? @db.VarChar(101)
+  bom_version          String? @db.VarChar(101)
+  process_data1        String? @db.VarChar(101)
+  process_data2        String? @db.VarChar(101)
+  process_data3        String? @db.VarChar(101)
+  process_data4        String? @db.VarChar(101)
+  process_data5        String? @db.VarChar(101)
+  process_data6        String? @db.VarChar(101)
+  process_data7        String? @db.VarChar(101)
+  process_data8        String? @db.VarChar(101)
+  process_data9        String? @db.VarChar(101)
+  process_data10       String? @db.VarChar(101)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ti_agent_test_process_quality_if {
+  transaction_id                 String?  @db.VarChar(50)
+  api_id                         String?  @db.VarChar(50)
+  if_status                      String?  @db.VarChar(2)
+  if_send_date                   String?  @db.VarChar(8)
+  if_send_time                   String?  @db.VarChar(6)
+  customer_code                  String?  @db.VarChar(35)
+  product_code                   String?  @db.VarChar(30)
+  product_date                   String   @db.VarChar(9)
+  site_code                      String   @db.VarChar(5)
+  model_name                     String   @db.VarChar(101)
+  lot_no                         String   @db.VarChar(101)
+  po_no                          String?  @db.VarChar(16)
+  product_quantity               Decimal? @db.Decimal(11, 0)
+  defect_quantity                Decimal? @db.Decimal(2, 0)
+  inspection_process_description String?  @db.VarChar(501)
+  defect_symptom_description     String?  @db.VarChar(501)
+  defect_cause_description       String?  @db.VarChar(501)
+  defect_policy_description      String?  @db.VarChar(5)
+  defect_set_serial_number       String   @db.VarChar(16)
+  defect_material_name           String?  @db.VarChar(101)
+  repair_detail_description      String?  @db.VarChar(501)
+  repair_date                    String?  @db.VarChar(9)
+  repair_result_code             String?  @db.VarChar(5)
+
+  @@id([product_date, site_code, model_name, lot_no, defect_set_serial_number], map: "ti_agent_test_process_quality_if_pk")
+}

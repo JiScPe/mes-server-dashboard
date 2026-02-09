@@ -136,4 +136,8 @@ dist
 .pnp.*
 
 # Ecosystem files for PM2
-ecosystem.config.js
+.ecosystem.config.js
+
+# prisma genereated files
+.prisma/
+app/generated/prisma/
