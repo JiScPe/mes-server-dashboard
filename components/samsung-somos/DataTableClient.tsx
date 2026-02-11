@@ -2,15 +2,18 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { DataTable } from "./data-table";
-import { columns } from "@/app/(samsung_somos)/outgoing-quality-countermeasure/column";
 
 export default function DataTableClient({
+  title,
   data,
+  columns,
   page,
   pageSize,
   pageCount,
 }: {
+  title: string;
   data: any[];
+  columns: any[];
   page: number;
   pageSize: number;
   pageCount: number;
@@ -25,7 +28,8 @@ export default function DataTableClient({
   };
 
   return (
-    <DataTable
+    <DataTable  
+      title={title}
       columns={columns}
       data={data}
       pageIndex={page - 1}

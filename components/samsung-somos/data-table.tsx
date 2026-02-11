@@ -25,6 +25,7 @@ import {
 import MenuTitle from "./MenuTitle";
 
 interface DataTableProps<TData> {
+  title: string;
   columns: ColumnDef<TData, any>[];
   data: TData[];
   pageCount: number;
@@ -35,6 +36,7 @@ interface DataTableProps<TData> {
 }
 
 export function DataTable<TData>({
+  title,
   columns,
   data,
   pageCount,
@@ -58,17 +60,15 @@ export function DataTable<TData>({
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col gap-4">
       {/* ===== Top Action Bar ===== */}
-      <div className="flex items-center justify-between mb-4">
-        <MenuTitle title="Outgoing Quality Countermeasure" />
+      <div className="flex justify-between items-center">
+        <MenuTitle title={title} />
 
         <div className="flex items-center gap-3">
           {/* Page size */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              Rows per page
-            </span>
+            <span className="text-sm text-muted-foreground">Rows per page</span>
 
             <Select
               value={String(pageSize)}
@@ -76,7 +76,7 @@ export function DataTable<TData>({
                 onPageSizeChange(Number(value));
               }}
             >
-              <SelectTrigger className="h-8 w-[72px]">
+              <SelectTrigger className="h-8 w-18">
                 <SelectValue />
               </SelectTrigger>
 
@@ -111,40 +111,34 @@ export function DataTable<TData>({
         </div>
       </div>
 
-      {/* ===== Table ===== */}
-      <div>
-        <Table className="overflow-hidden rounded-md border">
-          <TableHeader>
-            {table.getHeaderGroups().map((hg) => (
-              <TableRow key={hg.id}>
-                {hg.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      {/* Data Table */}
+      <Table className="overflow-hidden rounded-md border">
+        <TableHeader>
+          {table.getHeaderGroups().map((hg) => (
+            <TableRow key={hg.id}>
+              {hg.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

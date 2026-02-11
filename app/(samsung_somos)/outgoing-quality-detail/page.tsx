@@ -1,9 +1,35 @@
-import React from 'react'
+import DataTableClient from "../../../components/samsung-somos/DataTableClient";
+import { detailColumns } from "./detail-column";
 
-type Props = {}
+type Props = {
+  searchParams: Promise<{ page?: string; pageSize?: string }>;
+};
 
-export default function OutgoingQualityDetailPage({}: Props) {
+async function getData(page: number, pageSize: number) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/outgoing-quality-detail?page=${page}&pageSize=${pageSize}`,
+    { cache: "no-store" },
+  );
+  return res.json();
+}
+
+export default async function OutgoingQualityDetail({ searchParams }: Props) {
+  const { page: pageParam, pageSize: pageSizeParam } = await searchParams;
+  const page = Number(pageParam ?? 1);
+  const pageSize = Number(pageSizeParam ?? 10);
+
+  const { data, pageCount } = await getData(page, pageSize);
+
   return (
-    <div>OutgoingQualityDetailPage</div>
-  )
+    <main className="px-4 py-2">
+      <DataTableClient
+        title="Outgoing Quality Detail"
+        data={data}
+        columns={detailColumns}
+        page={page}
+        pageCount={pageCount}
+        pageSize={pageSize}
+      />
+    </main>
+  );
 }

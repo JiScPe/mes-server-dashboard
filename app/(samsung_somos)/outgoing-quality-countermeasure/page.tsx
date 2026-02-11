@@ -1,5 +1,5 @@
-import MenuTitle from "@/components/samsung-somos/MenuTitle";
 import DataTableClient from "../../../components/samsung-somos/DataTableClient";
+import { columns } from "./column";
 
 type Props = {
   searchParams: Promise<{ page?: string; pageSize?: string }>;
@@ -25,7 +25,9 @@ export default async function OutgoingQualityCounterMeasurePage({
   return (
     <main className="px-4 py-2">
       <DataTableClient
+        title="Outgoing Quality Countermeasure"
         data={data}
+        columns={columns}
         page={page}
         pageCount={pageCount}
         pageSize={pageSize}
