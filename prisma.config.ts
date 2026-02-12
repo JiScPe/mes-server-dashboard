@@ -1,4 +1,8 @@
+import dotenv from "dotenv";
 import { defineConfig, env } from "prisma/config";
+
+// Explicitly load production file
+dotenv.config({ path: ".env.production.local" });
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
