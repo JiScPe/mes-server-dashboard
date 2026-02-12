@@ -1,0 +1,47 @@
+export type ProductInfoType = {
+  transaction_id: string | null;
+  api_id: string | null;
+  if_status: string | null;
+  if_send_date: string | null;
+  if_send_time: string | null;
+  customer_code: string | null;
+  site_code: string | null;
+  model_name: string | null;
+  serial_number: string;
+  esn_ime: string | null;
+  product_date: string | null;
+  product_time: string | null;
+  lot_no: string | null;
+  product_line: string | null;
+  po_no: string | null;
+  delivery_date: string | null;
+  delivery_order: string | null;
+  delivery_destination: string | null;
+  e_pass1: string | null;
+  e_pass2: string | null;
+  e_pass3: string | null;
+  e_pass4: string | null;
+  e_pass5: string | null;
+  e_pass6: string | null;
+  e_pass7: string | null;
+  e_pass8: string | null;
+  e_pass9: string | null;
+  e_pass10: string | null;
+  sw_version: string | null;
+  hw_version: string | null;
+  bom_version: string | null;
+  process_data1: string | null;
+  process_data2: string | null;
+  process_data3: string | null;
+  process_data4: string | null;
+  process_data5: string | null;
+  process_data6: string | null;
+  process_data7: string | null;
+  process_data8: string | null;
+  process_data9: string | null;
+  process_data10: string | null;
+};
+
+export type CreateProductInfoInput = Partial<ProductInfoType>;
+
+export type UpdateProductInfoInput = Partial<CreateProductInfoInput>;
