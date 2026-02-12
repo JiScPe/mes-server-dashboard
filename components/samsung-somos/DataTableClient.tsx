@@ -10,6 +10,7 @@ export default function DataTableClient({
   page,
   pageSize,
   pageCount,
+  totalRow
 }: {
   title: string;
   data: any[];
@@ -17,6 +18,7 @@ export default function DataTableClient({
   page: number;
   pageSize: number;
   pageCount: number;
+  totalRow: number;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -35,6 +37,7 @@ export default function DataTableClient({
       pageIndex={page - 1}
       pageSize={pageSize}
       pageCount={pageCount}
+      totalRow={totalRow}
       onPageChange={(pageIndex) => {
         updateParams({ page: String(pageIndex + 1) });
       }}

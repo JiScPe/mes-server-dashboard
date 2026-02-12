@@ -18,7 +18,7 @@ export default async function OutgoingQualityDetail({ searchParams }: Props) {
   const page = Number(pageParam ?? 1);
   const pageSize = Number(pageSizeParam ?? 10);
 
-  const { data, pageCount } = await getData(page, pageSize);
+  const { data, pageCount, total } = await getData(page, pageSize);
 
   return (
     <main className="px-4 py-2">
@@ -29,6 +29,7 @@ export default async function OutgoingQualityDetail({ searchParams }: Props) {
         page={page}
         pageCount={pageCount}
         pageSize={pageSize}
+        totalRow={total}
       />
     </main>
   );

@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -31,6 +32,7 @@ interface DataTableProps<TData> {
   pageCount: number;
   pageIndex: number;
   pageSize: number;
+  totalRow: number;
   onPageChange: (pageIndex: number) => void;
   onPageSizeChange: (pageSize: number) => void;
 }
@@ -42,6 +44,7 @@ export function DataTable<TData>({
   pageCount,
   pageIndex,
   pageSize,
+  totalRow,
   onPageChange,
   onPageSizeChange,
 }: DataTableProps<TData>) {
@@ -90,24 +93,35 @@ export function DataTable<TData>({
             </Select>
           </div>
 
-          {/* Pagination buttons */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(pageIndex - 1)}
-            disabled={pageIndex === 0}
-          >
-            Previous
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="text-sm text-muted-foreground">
+              Total: {totalRow} rows
+            </div>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(pageIndex - 1)}
+              disabled={pageIndex === 0}
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="size-4" />
+            </Button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onPageChange(pageIndex + 1)}
-            disabled={pageIndex + 1 >= pageCount}
-          >
-            Next
-          </Button>
+            <div className="text-sm text-muted-foreground">
+              Page {pageIndex + 1} / {pageCount}
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(pageIndex + 1)}
+              disabled={pageIndex + 1 >= pageCount}
+              aria-label="Next page"
+            >
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
