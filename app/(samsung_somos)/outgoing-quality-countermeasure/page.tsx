@@ -7,7 +7,7 @@ type Props = {
 
 async function getData(page: number, pageSize: number) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/outgoing-quality-countermeasure?page=${page}&pageSize=${pageSize}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/samsung-somos/outgoing-quality-countermeasure?page=${page}&pageSize=${pageSize}`,
     { cache: "no-store" },
   );
   return res.json();
