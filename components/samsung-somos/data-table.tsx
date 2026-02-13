@@ -4,6 +4,7 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -15,7 +16,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  RefreshCcw,
+  SearchIcon,
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -24,6 +30,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import MenuTitle from "./MenuTitle";
+import { Input } from "../ui/input";
+import { ChangeEvent, useState } from "react";
 
 interface DataTableProps<TData> {
   title: string;
@@ -33,8 +41,11 @@ interface DataTableProps<TData> {
   pageIndex: number;
   pageSize: number;
   totalRow: number;
+  searchTextParam?: string;
   onPageChange: (pageIndex: number) => void;
   onPageSizeChange: (pageSize: number) => void;
+  onSearchClick?: (searchText: string) => void;
+  onSearchReset?: () => void;
 }
 
 export function DataTable<TData>({
@@ -45,8 +56,11 @@ export function DataTable<TData>({
   pageIndex,
   pageSize,
   totalRow,
+  searchTextParam,
   onPageChange,
   onPageSizeChange,
+  onSearchClick,
+  onSearchReset,
 }: DataTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -60,7 +74,9 @@ export function DataTable<TData>({
     },
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
+  const [searchText, setSearchText] = useState<string>(searchTextParam || "");
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -69,6 +85,41 @@ export function DataTable<TData>({
         <MenuTitle title={title} />
 
         <div className="flex items-center gap-3">
+          {/* Search Filter */}
+          <div className="flex items-center py-4 gap-2">
+            <Input
+              placeholder="Filter SN..."
+              className="max-w-sm"
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setSearchText(e.target.value)
+              }
+              value={searchText}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-black text-white"
+              onClick={() => {
+                if (onSearchClick) {
+                  onSearchClick(searchText);
+                }
+              }}
+            >
+              <SearchIcon className="ml-2 size-5 text-muted-foreground" />
+              Search
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => {
+                onSearchReset;
+                setSearchText("");
+              }}
+            >
+              <RefreshCcw className="hover:rotate-90 transition-all duration-300" />
+            </Button>
+          </div>
+
           {/* Page size */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Rows per page</span>
@@ -97,7 +148,7 @@ export function DataTable<TData>({
             <div className="text-sm text-muted-foreground">
               Total: {totalRow} rows
             </div>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -142,15 +193,23 @@ export function DataTable<TData>({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
+          {table.getRowModel().rows.length > 0 ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </div>

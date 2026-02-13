@@ -10,7 +10,8 @@ export default function DataTableClient({
   page,
   pageSize,
   pageCount,
-  totalRow
+  totalRow,
+  searchText,
 }: {
   title: string;
   data: any[];
@@ -19,6 +20,7 @@ export default function DataTableClient({
   pageSize: number;
   pageCount: number;
   totalRow: number;
+  searchText?: string;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,7 +32,7 @@ export default function DataTableClient({
   };
 
   return (
-    <DataTable  
+    <DataTable
       title={title}
       columns={columns}
       data={data}
@@ -38,6 +40,7 @@ export default function DataTableClient({
       pageSize={pageSize}
       pageCount={pageCount}
       totalRow={totalRow}
+      searchTextParam={searchText}
       onPageChange={(pageIndex) => {
         updateParams({ page: String(pageIndex + 1) });
       }}
@@ -46,6 +49,20 @@ export default function DataTableClient({
         updateParams({
           pageSize: String(size),
           page: "1", // reset page
+        });
+      }}
+      onSearchClick={(text) => {
+        updateParams({
+          pageSize: "10", // reset page size
+          page: "1", // reset page
+          searchText: text || "",
+        });
+      }}
+      onSearchReset={() => {
+        updateParams({
+          pageSize: "10", // reset page size
+          page: "1", // reset page
+          searchText: "",
         });
       }}
     />
