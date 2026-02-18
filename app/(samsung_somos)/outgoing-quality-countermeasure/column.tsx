@@ -40,7 +40,7 @@ export const columns: ColumnDef<OutgoingQualityCounterMeasureType>[] = [
   },
   {
     accessorKey: "out_quality_master_key",
-    header: "Quality Master Key",
+    header: () => <div className="text-blue-600">Quality Master Key</div>,
   },
   {
     accessorKey: "countermeasure_seq",
@@ -57,7 +57,7 @@ export const columns: ColumnDef<OutgoingQualityCounterMeasureType>[] = [
   },
   {
     accessorKey: "serial_number",
-    header: "Serial Number",
+    header: () => <div className="text-blue-600">Serial Number</div>,
   },
   {
     accessorKey: "causes_description",

@@ -8,21 +8,31 @@ export async function GET(req: NextRequest) {
 
   const page = Number(searchParams.get("page") ?? 1);
   const pageSize = Number(searchParams.get("pageSize") ?? 10);
-  const master_key = searchParams.get("out_quality_master_key") ?? "";
+  const searchText = searchParams.get("searchText") || ""; // Use empty string if null
 
   const skip = (page - 1) * pageSize;
 
-   // 🔹 build where conditionally
-  const where = master_key
-    ? { out_quality_master_key: master_key }
-    : undefined;
+  const searchFields = [
+    "product_date",
+    "lot_no",
+    "inspection_type_code",
+    "inspection_step_code",
+  ];
+  // 1. Define the dynamic 'where' clause
+  const where = searchText
+    ? {
+        OR: searchFields.map((field) => ({
+          [field]: { contains: searchText, mode: "insensitive" },
+        })),
+      }
+    : {};
 
   const [data, total] = await Promise.all([
     prisma.ti_agent_test_outgoing_quality_master.findMany({
+      where,
       skip,
       take: pageSize,
       orderBy: [{ if_send_date: "desc" }, { if_send_time: "desc" }],
-      where,
     }),
     prisma.ti_agent_test_outgoing_quality_master.count({
         where

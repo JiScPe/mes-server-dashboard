@@ -10,8 +10,17 @@ export const productInfoColumns: ColumnDef<ProductInfoType>[] = [
     header: "Status",
     cell: ({ row }) => {
       const val = row.getValue("if_status") as string | null;
-      const bgColor = val === "SC" || val === "PASS" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
-      return <div className={`text-center text-sm ${bgColor} rounded-md font-semibold`}>{val}</div>;
+      const bgColor =
+        val === "SC" || val === "PASS"
+          ? "bg-green-100 text-green-800"
+          : "bg-red-100 text-red-800";
+      return (
+        <div
+          className={`text-center text-sm ${bgColor} rounded-md font-semibold`}
+        >
+          {val}
+        </div>
+      );
     },
   },
   { accessorKey: "api_id", header: "API ID" },
@@ -20,7 +29,10 @@ export const productInfoColumns: ColumnDef<ProductInfoType>[] = [
   { accessorKey: "customer_code", header: "Customer Code" },
   { accessorKey: "site_code", header: "Site Code" },
   { accessorKey: "model_name", header: "Model Name" },
-  { accessorKey: "serial_number", header: "Serial Number" },
+  {
+    accessorKey: "serial_number",
+    header: () => <div className="text-blue-600">Serial Number</div>,
+  },
   { accessorKey: "esn_ime", header: "ESN/IME" },
   { accessorKey: "product_date", header: "Product Date" },
   { accessorKey: "product_time", header: "Product Time" },

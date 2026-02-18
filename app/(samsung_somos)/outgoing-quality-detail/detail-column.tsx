@@ -18,7 +18,9 @@ export const detailColumns: ColumnDef<OutgoingQualityDetailType>[] = [
           ? "bg-green-100 text-green-800"
           : "bg-red-100 text-red-800";
       return (
-        <div className={`text-center text-sm ${bgColor} rounded-md font-semibold`}>
+        <div
+          className={`text-center text-sm ${bgColor} rounded-md font-semibold`}
+        >
           {val}
         </div>
       );
@@ -38,22 +40,19 @@ export const detailColumns: ColumnDef<OutgoingQualityDetailType>[] = [
   },
   {
     accessorKey: "out_quality_master_key",
-    header: "Quality Master Key",
+    header: () => <div className="text-blue-600">Quality Master Key</div>,
   },
   {
     accessorKey: "inspection_item_code",
-    header: "Inspection Item Code",
+    header: () => <div className="text-blue-600">Inspection Item Code</div>,
   },
   {
     accessorKey: "inspection_element_code",
-    header: "Inspection Element Code",
+    header: () => <div className="text-blue-600">Inspection Element Code</div>,
   },
   {
     accessorKey: "inspection_sorting_order",
-    header: "Sorting Order",
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("inspection_sorting_order")}</div>
-    ),
+    header: "Inspection Sorting Item",
   },
   {
     accessorKey: "inspection_value",

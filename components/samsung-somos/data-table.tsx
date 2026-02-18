@@ -32,6 +32,7 @@ import {
 import MenuTitle from "./MenuTitle";
 import { Input } from "../ui/input";
 import { ChangeEvent, useState } from "react";
+import { trimText } from "@/lib/helpers/trim";
 
 interface DataTableProps<TData> {
   title: string;
@@ -88,10 +89,10 @@ export function DataTable<TData>({
           {/* Search Filter */}
           <div className="flex items-center py-4 gap-2">
             <Input
-              placeholder="Filter SN..."
-              className="max-w-sm"
+              placeholder="Search here..."
+              className="max-w-sm 2xl:max-w-md"
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setSearchText(e.target.value)
+                setSearchText(trimText(e.target.value, 30))
               }
               value={searchText}
             />
@@ -112,8 +113,10 @@ export function DataTable<TData>({
               variant="outline"
               size="icon"
               onClick={() => {
-                onSearchReset;
-                setSearchText("");
+                setSearchText(""); // 1. Clear the local input state
+                if (onSearchReset) {
+                  onSearchReset(); // 2. Call the prop function (with parentheses!)
+                }
               }}
             >
               <RefreshCcw className="hover:rotate-90 transition-all duration-300" />
@@ -205,7 +208,7 @@ export function DataTable<TData>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+              <TableCell colSpan={columns.length} className="h-24 text-start">
                 No results.
               </TableCell>
             </TableRow>

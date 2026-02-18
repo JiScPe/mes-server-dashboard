@@ -8,16 +8,34 @@ export async function GET(req: NextRequest) {
 
   const page = Number(searchParams.get("page") ?? 1);
   const pageSize = Number(searchParams.get("pageSize") ?? 10);
+  const searchText = searchParams.get("searchText") || ""; // Use empty string if null
 
   const skip = (page - 1) * pageSize;
 
+  const searchFields = [
+    "out_quality_master_key",
+    "serial_number",
+  ];
+  // 1. Define the dynamic 'where' clause
+  const where = searchText
+    ? {
+        OR: searchFields.map((field) => ({
+          [field]: { contains: searchText, mode: "insensitive" },
+        })),
+      }
+    : {};
+
+  // 2. Pass 'where' to both the data fetch and the count
   const [data, total] = await Promise.all([
     prisma.ti_agent_test_outgoing_quality_countermeasure.findMany({
+      where, // Added here
       skip,
       take: pageSize,
-      orderBy: [{ transaction_id: "asc" }, { countermeasure_seq: "asc" }],
+      orderBy: [{ if_send_date: "desc" }, { if_send_time: "desc" }],
     }),
-    prisma.ti_agent_test_outgoing_quality_countermeasure.count(),
+    prisma.ti_agent_test_outgoing_quality_countermeasure.count({
+      where,
+    }),
   ]);
 
   return NextResponse.json({
