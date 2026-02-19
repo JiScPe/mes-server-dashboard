@@ -1,116 +1,97 @@
 import dotenv from "dotenv";
 import path from "path";
-
-// Explicitly tell dotenv to load .env.ws.production from the current working directory
-dotenv.config({ path: path.resolve(process.cwd(), ".env.ws.production") });
-
 import { WebSocketServer } from "ws";
 import { Client } from "ssh2";
+// Ensure this path matches where you manually placed the file in 'standalone'
 import { ALL_SERVERS } from "../../lib/utils/server-list";
 
-// --- START VALIDATION BLOCK ---
-console.log("----------------------------------------");
-console.log("[System] Validating Server List...");
+/**
+ * Starts the SSH WebSocket server.
+ * Wrapped in a function to be called by Next.js standalone server.js
+ */
+export function startSshWebSocket() {
+  // Use __dirname to ensure the .env is found relative to this script, 
+  // avoiding issues with IIS's default working directory
+  const envPath = path.resolve(__dirname, ".env.ws.production");
+  const result = dotenv.config({ path: envPath });
 
-const serverKeys = Object.keys(ALL_SERVERS || {});
+  console.log("----------------------------------------");
+  if (result.error) {
+    console.warn("[WS] Warning: Could not find .env.ws.production at", envPath);
+  } else {
+    console.log("[WS] Loaded environment from .env.ws.production");
+  }
 
-if (serverKeys.length === 0) {
-  console.error(
-    "❌ FATAL: No servers found in ALL_SERVERS. Check '../../lib/utils/server-list'",
-  );
-  process.exit(1); // Exit if no servers are loaded
-} else {
-  // Loop through every key to get the specific config
-  serverKeys.forEach((key) => {
-    const config = ALL_SERVERS[key];
+  const serverKeys = Object.keys(ALL_SERVERS || {});
 
-    // This addresses your request to get 'serverKeys.host'
-    console.log(`🔹 ${key.padEnd(20)} -> Host: ${config.host}`);
-  });
-}
-console.log("----------------------------------------");
-
-console.log(
-  `✅ Loaded ${serverKeys.length} server(s): [ ${serverKeys.join(", ")} ]`,
-);
-
-// Show a sample of the first server to verify structure (be careful with passwords in logs)
-const sampleKey = serverKeys[0];
-console.log(`\n🔍 Sample Config for '${sampleKey}':`);
-console.log(JSON.stringify(ALL_SERVERS[sampleKey], null, 2));
-console.log("----------------------------------------\n");
-// --- END VALIDATION BLOCK ---
-
-console.log("[WS] Starting SSH WebSocket server...");
-
-const WS_PORT: number = parseInt(process.env.WS_PORT || "3001");
-const wss = new WebSocketServer({ port: WS_PORT });
-
-wss.on("listening", () => {
-  console.log(`[WS] Listening on port ${WS_PORT}`);
-});
-
-wss.on("connection", (ws, req) => {
-  const ip = req.socket.remoteAddress;
-  console.log(`[WS] Client connected from ${ip}`);
-
-  const url = new URL(req.url || "", `ws://${req.headers.host}`);
-
-  const server = url.searchParams.get("server");
-
-  if (!server) {
-    ws.send("Missing server parameter");
-    ws.close();
+  if (serverKeys.length === 0) {
+    console.error("❌ FATAL: No servers found in ALL_SERVERS.");
+    // In a unified setup, we don't want to kill the whole process (Next.js), 
+    // so we just return instead of process.exit(1)
     return;
   }
 
-  const sshConfig = ALL_SERVERS[server];
-  console.log(JSON.stringify(sshConfig, null, 2));
+  console.log(`✅ Ready to proxy ${serverKeys.length} server(s)`);
+  console.log("----------------------------------------");
 
-  console.log(`[WS] Requested server: ${server}`);
+  const WS_PORT: number = parseInt(process.env.WS_PORT || "3001");
+  
+  // Create the WebSocket server
+  const wss = new WebSocketServer({ port: WS_PORT });
 
-  const conn = new Client();
+  wss.on("listening", () => {
+    console.log(`[WS] SSH Gateway listening on port ${WS_PORT}`);
+  });
 
-  conn.on("ready", () => {
-    console.log(`[SSH] Connected to ${server}`);
+  wss.on("connection", (ws, req) => {
+    const ip = req.socket.remoteAddress;
+    const url = new URL(req.url || "", `ws://${req.headers.host}`);
+    const serverName = url.searchParams.get("server");
 
-    conn.shell(
-      {
-        term: "xterm-256color",
-        // cols: 100,
-        // rows: 30,
-      },
-      (err, stream) => {
+    if (!serverName || !ALL_SERVERS[serverName]) {
+      console.log(`[WS] Connection rejected: Invalid server '${serverName}' from ${ip}`);
+      ws.send("Error: Invalid or missing server parameter");
+      ws.close();
+      return;
+    }
+
+    console.log(`[WS] Connecting ${ip} to ${serverName}...`);
+
+    const sshConfig = ALL_SERVERS[serverName];
+    const conn = new Client();
+
+    conn.on("ready", () => {
+      conn.shell({ term: "xterm-256color" }, (err, stream) => {
         if (err) {
-          console.error("[SSH] Shell error:", err.message);
+          ws.send(`[SSH Error] ${err.message}`);
           ws.close();
           return;
         }
 
-        console.log("[SSH] Shell opened");
+        // Send initial newline to prompt the shell
+        stream.write("\n");
 
-        stream.write("\n"); // <-- IMPORTANT
-
-        ws.on("message", (msg) => {
-          //   console.log("[WS] → SSH:", msg.toString());
-          stream.write(msg.toString());
-        });
-
+        ws.on("message", (msg) => stream.write(msg.toString()));
         stream.on("data", (data: Buffer) => ws.send(data.toString()));
 
         ws.on("close", () => {
-          console.log("[WS] Client disconnected");
           stream.end();
           conn.end();
         });
-      },
-    );
-  });
+        
+        stream.on("close", () => {
+          ws.close();
+          conn.end();
+        });
+      });
+    });
 
-  conn.on("error", (err) => {
-    console.error("[SSH] Connection error:", err.message);
-    ws.close();
-  });
+    conn.on("error", (err) => {
+      console.error(`[SSH] connection error for ${serverName}:`, err.message);
+      ws.send(`SSH Connection Failed: ${err.message}`);
+      ws.close();
+    });
 
-  conn.connect(sshConfig);
-});
+    conn.connect(sshConfig);
+  });
+}

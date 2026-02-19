@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
   const page = Number(searchParams.get("page") ?? 1);
   const pageSize = Number(searchParams.get("pageSize") ?? 10);
-  const searchText = searchParams.get("searchText") || ""; // Use empty string if null
+  const searchText = String(searchParams.get("searchText") || ""); // Use empty string if null
 
   const skip = (page - 1) * pageSize;
 
