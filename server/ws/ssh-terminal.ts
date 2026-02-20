@@ -12,14 +12,14 @@ import { ALL_SERVERS } from "../../lib/utils/server-list";
 export function startSshWebSocket() {
   // Use __dirname to ensure the .env is found relative to this script, 
   // avoiding issues with IIS's default working directory
-  const envPath = path.resolve(__dirname, ".env.ws.production");
+  const envPath = path.resolve(__dirname, ".env");
   const result = dotenv.config({ path: envPath });
 
   console.log("----------------------------------------");
   if (result.error) {
-    console.warn("[WS] Warning: Could not find .env.ws.production at", envPath);
+    console.warn("[WS] Warning: Could not find .env at", envPath);
   } else {
-    console.log("[WS] Loaded environment from .env.ws.production");
+    console.log("[WS] Loaded environment from .env");
   }
 
   const serverKeys = Object.keys(ALL_SERVERS || {});
