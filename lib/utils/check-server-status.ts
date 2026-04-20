@@ -10,6 +10,7 @@ import {
   wpclCheckStatusProcess,
   zooCheckStatusProcess,
 } from "./ssh-commands";
+import { concatIPs } from "../helpers/string-operation";
 
 type ServerType =
   | "ZOOKEEPER"
@@ -21,7 +22,7 @@ type ServerType =
   | "WPCL"
   | "IOT";
 
-type StatusHandler = (appConn: Client, nginxConn?: Client) => Promise<any>;
+type StatusHandler = (appConn: Client, nginxConn?: Client) => Promise<unknown>;
 
 /** * Open ONE SSH connection per server */ function openSSH(
   config: SSHConfig
@@ -75,7 +76,7 @@ export async function checkServer(
     nginxConn = await openSSH(nginxConfig!);
 
     const types = detectServerTypes(serverName);
-    const services: any[] = [];
+    const services: Array<{ type: ServerType; result: unknown }> = [];
 
     for (const type of types) {
       const handler = SERVER_HANDLERS[type];
@@ -90,14 +91,19 @@ export async function checkServer(
 
     return {
       server: serverName,
+      ip_addresses: concatIPs(config.host, config.prodLineIP || ''),
       status: "ONLINE",
       services,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : String(err) || "SSH connection failed";
+
     return {
       server: serverName,
+      ip_addresses: concatIPs(config.host, config.prodLineIP || ''),
       status: "OFFLINE",
-      error: err.message || "SSH connection failed",
+      error: message,
       services: [],
     };
   } finally {

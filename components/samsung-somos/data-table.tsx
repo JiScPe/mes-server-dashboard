@@ -32,7 +32,7 @@ import {
 import MenuTitle from "./MenuTitle";
 import { Input } from "../ui/input";
 import { ChangeEvent, useState } from "react";
-import { trimText } from "@/lib/helpers/trim";
+import { trimText } from "@/lib/helpers/string-operation";
 
 interface DataTableProps<TData> {
   title: string;
