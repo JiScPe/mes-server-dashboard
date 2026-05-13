@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
-import "xterm/css/xterm.css";
+import 'xterm/css/xterm.css';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 
 const WS_HOST = process.env.NEXT_PUBLIC_WS_HOST;
@@ -22,20 +22,19 @@ export default function XTermClient({
   const termRef = useRef<Terminal | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const socketReadyRef = useRef(false);
-  const fitAddon = new FitAddon();
+  const fitAddon = useMemo(() => new FitAddon(), []);
 
   useLayoutEffect(() => {
     if (open) {
       setTimeout(() => fitAddon.fit(), 0);
     }
-  }, [open]);
+  }, [open, fitAddon]);
 
   useEffect(() => {
     if (!open) return;
 
-    let rafId: number;
 
-    rafId = requestAnimationFrame(() => {
+    const rafId: number = requestAnimationFrame(() => {
       if (!terminalRef.current) {
         console.warn("[XTERM] terminalRef not ready");
         return;
@@ -46,7 +45,7 @@ export default function XTermClient({
       const term = new Terminal({
         cursorBlink: true,
         fontSize: 14,
-        scrollback: 5000,
+        scrollback: 500,
         theme: {
           background: "#0f172a",
           cursor: "#ffffff",
@@ -106,19 +105,19 @@ export default function XTermClient({
 
       console.log("[XTERM] Disposed");
     };
-  }, [open, server]);
+  }, [open, server, fitAddon]);
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent
         className="
-          w-full max-w-none p-0 bg-slate-900
+          inset-0 translate-x-0 translate-y-0 w-250 mx-auto max-w-none p-0 my-5 bg-slate-900
           [&>button]:text-white
           [&>button]:hover:text-gray-300
           [&>button]:focus:ring-white
         "
       >
-        <DialogHeader className="px-4 py-2 border-b border-white/10">
+        <DialogHeader className="w-inherit px-4 py-2 border-b border-white/10">
           <DialogTitle className="text-white text-sm">
             Terminal — {server}
           </DialogTitle>

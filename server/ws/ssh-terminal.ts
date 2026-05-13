@@ -87,8 +87,8 @@ export function startSshWebSocket() {
     });
 
     conn.on("error", (err) => {
-      console.error(`[SSH] connection error for ${serverName}:`, err.message);
-      ws.send(`SSH Connection Failed: ${err.message}`);
+      console.error(`[SSH] connection error for ${serverName}:`, err);
+      ws.send(`SSH Connection Failed: ${err?.message || "Unknown error"}`);
       ws.close();
     });
 

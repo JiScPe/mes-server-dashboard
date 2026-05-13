@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack && tsc -p tsconfig.server.json",
-    "ws:dev": "ts-node --project tsconfig.server.json -r tsconfig-paths/register server/ws/ssh-terminal.ts",
+    "ws:dev": "ts-node --project tsconfig.server.json -r tsconfig-paths/register server/ws/ssh-terminal-dev.ts",
     "ws": "node -r tsconfig-paths/register dist/server/ws/ssh-terminal.js",
     "start": "next start",
     "lint": "eslint"
