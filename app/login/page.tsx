@@ -1,6 +1,6 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { User, Lock } from "lucide-react";
 
@@ -14,15 +14,16 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const res = await signIn("credentials", {
+    const res = await authClient.signIn.username({
       username,
       password,
-      redirect: false,
     });
 
     setLoading(false);
 
-    if (res?.error) {
+    if (res instanceof Response && !res.ok) {
+      setError("Invalid username or password");
+    } else if (res && "error" in res && res.error) {
       setError("Invalid username or password");
     } else {
       window.location.href = "/";
