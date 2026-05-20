@@ -19,15 +19,9 @@ type ServerCardItemProps = {
   serverType: ServiceType;
 };
 
-type NginxUpstream = {
-  server_name: string;
-  service_name: string;
-  isUpstream: boolean;
-};
-
 const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
   const [open, setOpen] = useState(false);
-  const {} = useServerListContext();
+  const {} = useServerListContext()
 
   function setCardBgColor(type: ServiceType): string {
     switch (type) {
@@ -57,11 +51,11 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
   function checkNginxUpstreamStatus(
     serverName: string,
     serviceName: string,
-    nginxUpstream: NginxUpstream[] | undefined,
+    nginxUpstream: any[] | undefined
   ): boolean {
     if (!nginxUpstream) return true;
     const upstream = nginxUpstream.find(
-      (up) => up.server_name === serverName && up.service_name === serviceName,
+      (up) => up.server_name === serverName && up.service_name === serviceName
     );
     return upstream ? upstream.isUpstream : true;
   }
@@ -70,14 +64,11 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
     <>
       <Card
         className={`m-2 p-2 border border-gray-300 rounded w-full h-full overflow-y-auto bg-chart bg-transparent ${setCardBgColor(
-          serverType,
+          serverType
         )}`}
       >
         <CardHeader>
-          <CardTitle className="flex flex-col gap-2">
-            <label>{serverItem.server}</label>
-            <small className="font-medium">{`(${serverItem.ip_addresses || 'Not found IP Address'})`}</small>
-          </CardTitle>
+          <CardTitle>{serverItem.server}</CardTitle>
           <CardDescription className="text-black">
             <ContextMenu>
               <ContextMenuTrigger asChild>
@@ -91,7 +82,7 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
                             checkNginxUpstreamStatus(
                               serverItem.server,
                               service,
-                              nginx_upstream,
+                              nginx_upstream
                             )
                               ? ""
                               : "bg-gray-400 text-black"
@@ -109,8 +100,8 @@ const ServerCardItem = ({ serverItem, serverType }: ServerCardItemProps) => {
                           </strong>{" "}
                           {pid ? `(PID: ${pid})` : ""}
                         </div>
-                      ),
-                    ),
+                      )
+                    )
                   )}
                 </div>
               </ContextMenuTrigger>

@@ -21,10 +21,9 @@ export async function GET() {
       updatedAt: new Date().toISOString(),
       servers,
     });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unexpected server failure";
+  } catch (err: any) {
     return NextResponse.json(
-      { error: message },
+      { error: err.message || "Unexpected server failure" },
       { status: 500 }
     );
   }

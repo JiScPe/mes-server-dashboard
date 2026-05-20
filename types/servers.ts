@@ -4,7 +4,6 @@ export interface SSHConfig {
   username: string;
   password?: string;
   privateKey?: string;
-  prodLineIP?: string;
 }
 
 export interface iServersStatusResponse {
@@ -16,7 +15,6 @@ export interface Server {
   server: string;
   status: string;
   services: Service[];
-  ip_addresses?: string;
 }
 
 export interface Service {
