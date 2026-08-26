@@ -6,6 +6,7 @@ import {
 } from "@/lib/helpers/group-by-type";
 import { iServersStatusResponse } from "@/types/servers";
 import { ServerListProvider } from "@/components/contexts/ServerListContext";
+import { headers } from "next/headers";
 
 
 const API_URL = process.env.API_URL;
@@ -19,10 +20,11 @@ type Props = {
 
 const ServerListPage = async ({ searchParams }: Props) => {
   const queryParams = await searchParams;
+  const requestHeaders = await headers();
 
   const res = await fetch(
     `${API_URL}:${PORT}/api/status-all-prd`,
-    { cache: "no-store" }
+    { cache: "no-store", headers: { cookie: requestHeaders.get("cookie") ?? "" } }
   );
 
   const { servers }: iServersStatusResponse = await res.json();

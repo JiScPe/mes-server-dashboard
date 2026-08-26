@@ -1,9 +1,13 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { requireApiSession } from "@/lib/auth-guard";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const authResult = await requireApiSession(req);
+  if (authResult.response) return authResult.response;
+
   const { searchParams } = new URL(req.url);
 
   const page = Number(searchParams.get("page") ?? 1);

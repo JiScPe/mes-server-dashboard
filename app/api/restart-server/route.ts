@@ -1,3 +1,4 @@
+import { requireElevatedApiSession } from "@/lib/auth-guard";
 import { qas_servers } from "@/lib/utils/server-list";
 import { NextResponse } from "next/server";
 import { Client } from "ssh2";
@@ -43,6 +44,9 @@ function execCommand(conn: Client, command: string): Promise<void> {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function POST(req: Request) {
+  const authResult = await requireElevatedApiSession(req);
+  if (authResult.response) return authResult.response;
+
   const { searchParams } = new URL(req.url);
   const server = searchParams.get("server");
   const module = searchParams.get("module");

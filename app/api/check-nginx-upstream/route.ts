@@ -1,4 +1,5 @@
 // app/api/check-status/route.ts
+import { requireApiSession } from "@/lib/auth-guard";
 import { transformUpstreamResult } from "@/lib/utils/check-nginx-upstream";
 import { qas_servers } from "@/lib/utils/server-list";
 import { SSHConfig } from "@/types/servers";
@@ -43,6 +44,9 @@ function runSSHCommand(config: SSHConfig, command: string): Promise<string> {
 }
 
 export async function POST(request: Request) {
+  const authResult = await requireApiSession(request);
+  if (authResult.response) return authResult.response;
+
   try {
     const body = await request.json();
     const { server, module } = body;

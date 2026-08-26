@@ -2,10 +2,14 @@ import { checkServer } from "@/lib/utils/check-server-status";
 import { prd_servers } from "@/lib/utils/server-list";
 import { NextResponse } from "next/server";
 import pLimit from "p-limit";
+import { requireApiSession } from "@/lib/auth-guard";
 
 const limit = pLimit(5); // 🔒 max 5 concurrent SSH connections
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authResult = await requireApiSession(request);
+  if (authResult.response) return authResult.response;
+
   try {
     const nginxConfig = prd_servers["NGINX_PRD_SERVER_2"];
 

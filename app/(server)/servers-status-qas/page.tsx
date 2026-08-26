@@ -6,6 +6,7 @@ import {
   groupServersByTypeQAS,
   SERVICE_TYPE_ORDER_QAS,
 } from "@/lib/helpers/group-by-type-qas";
+import { headers } from "next/headers";
 
 const API_URL = process.env.API_URL;
 const PORT = process.env.PORT;
@@ -18,10 +19,11 @@ type Props = {
 
 const ServerListPage = async ({ searchParams }: Props) => {
   const queryParams = await searchParams;
+  const requestHeaders = await headers();
 
   const res = await fetch(
     `${API_URL}:${PORT}/api/status-all-qas`,
-    { cache: "no-store" },
+    { cache: "no-store", headers: { cookie: requestHeaders.get("cookie") ?? "" } },
   );
 
   const { servers }: iServersStatusResponse = await res.json();

@@ -79,6 +79,10 @@ web_modules/
 .env.production.local
 .env.local
 
+# Local Better Auth SQLite database
+prisma-auth/data/
+prisma-auth/generated/
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
